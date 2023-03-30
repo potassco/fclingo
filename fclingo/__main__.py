@@ -25,7 +25,7 @@ class AppConfig(object):
         self.print_trans = clingo.Flag(False)
 
 
-class Application(object):
+class FclingoApp(clingo.Application):
     """
     Application class that can be used with `clingo.clingo_main` to solve AMT
     problems.
@@ -300,15 +300,19 @@ class Application(object):
         # validate min-/max-int
         if self._propagator.config.min_int > self._propagator.config.max_int:
             raise RuntimeError("min-int must not be larger than max-int")
+            return False
 
         # validate thread-specific options
         for opt, n in self.occurrences.items():
             if n > 1:
                 raise RuntimeError("multiple occurrences of {}".format(opt))
+                return False
 
         # apply thread-specific options
         for f in self.todo:
             f()
+
+        return True
 
     def _on_statistics(self, step, akku):
         self._propagator.on_statistics(step, akku)
@@ -342,4 +346,4 @@ class Application(object):
 
 
 if __name__ == "__main__":
-    sys.exit(int(clingo.clingo_main(Application(), sys.argv[1:])))
+    sys.exit(int(clingo.clingo_main(FclingoApp(), sys.argv[1:])))
