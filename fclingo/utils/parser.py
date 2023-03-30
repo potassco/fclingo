@@ -12,7 +12,7 @@ from pkg_resources import DistributionNotFound, require
 __all__ = ["get_parser"]
 
 try:
-    VERSION = require("fillname")[0].version
+    VERSION = require("fclingo")[0].version
 except DistributionNotFound:  # nocoverage
     VERSION = "local"  # nocoverage
 
@@ -22,10 +22,10 @@ def get_parser() -> ArgumentParser:
     Return the parser for command line options.
     """
     parser = ArgumentParser(
-        prog="fillname",
+        prog="fclingo",
         description=dedent(
             """\
-            fillname
+            fclingo
             filldescription
             """
         ),

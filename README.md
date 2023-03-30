@@ -1,4 +1,4 @@
-# fillname
+# fclingo
 
 This project template is configured to ease collaboration. Linters, formatters,
 and actions are already configured and ready to use.
@@ -10,13 +10,13 @@ name and some metadata. The script can then be removed afterward and the
 ## Installation
 
 ```shell
-pip install fillname
+pip install fclingo
 ```
 
 ## Usage
 
 ```shell
-fillname -h
+fclingo -h
 ```
 
 ## Development

@@ -5,8 +5,8 @@ import logging
 from io import StringIO
 from unittest import TestCase
 
-from fillname.utils.logger import setup_logger
-from fillname.utils.parser import get_parser
+from fclingo.utils.logger import setup_logger
+from fclingo.utils.parser import get_parser
 
 
 class TestMain(TestCase):

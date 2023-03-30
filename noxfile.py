@@ -16,24 +16,24 @@ def format(session):
 
     autoflake_args = [
         "--in-place",
-        "--imports=fillname",
+        "--imports=fclingo",
         "--ignore-init-module-imports",
         "--remove-unused-variables",
         "-r",
-        "fillname",
+        "fclingo",
         "tests",
     ]
     if check:
         autoflake_args.remove("--in-place")
     session.run("autoflake", *autoflake_args)
 
-    isort_args = ["--profile", "black", "fillname", "tests"]
+    isort_args = ["--profile", "black", "fclingo", "tests"]
     if check:
         isort_args.insert(0, "--check")
         isort_args.insert(1, "--diff")
     session.run("isort", *isort_args)
 
-    black_args = ["fillname", "tests"]
+    black_args = ["fclingo", "tests"]
     if check:
         black_args.insert(0, "--check")
         black_args.insert(1, "--diff")
@@ -56,19 +56,19 @@ def doc(session):
 @nox.session
 def lint_flake8(session):
     session.install("-e", ".[lint_flake8]")
-    session.run("flake8", "fillname", "tests")
+    session.run("flake8", "fclingo", "tests")
 
 
 @nox.session
 def lint_pylint(session):
     session.install("-e", ".[lint_pylint]")
-    session.run("pylint", "fillname", "tests")
+    session.run("pylint", "fclingo", "tests")
 
 
 @nox.session
 def typecheck(session):
     session.install("-e", ".[typecheck]")
-    session.run("mypy", "-p", "fillname", "-p", "tests")
+    session.run("mypy", "-p", "fclingo", "-p", "tests")
 
 
 @nox.session(python=PYTHON_VERSIONS)

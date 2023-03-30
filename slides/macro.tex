@@ -1,0 +1,172 @@
+%!TEX root = paper.tex
+
+\newtheorem{proposition}{Proposition}
+\newcommand{\den}[1]{\llbracket \, #1 \, \rrbracket}
+% \newcommand{\denc}[3]{\llbracket \, #3 \, \rrbracket_{\langle#1,#2\rangle}}
+% \newcommand{\inter}[2]{\ensuremath{\mathcal{I}_{#1,#2}}}
+% \newcommand{\CC}{\ensuremath{\mathcal{C^+}}} % {\ensuremath{\mathcal{C_C}}} % {\ensuremath{\mathcal{CC}}}
+% \newcommand{\TC}[1]{\ensuremath{\mathcal{T_{#1}}}}
+% \newcommand{\cond}[2]{\ensuremath{|#1:#2|}}
+\newcommand{\ctermm}[3]{\ensuremath{{#1|#2}{:\,}#3}}
+\newcommand{\cterm}[3]{\ensuremath{(\ctermm{#1}{#2}{#3})}} % {\ensuremath{({#1|#2}\mathrel{:}#3})}
+% \newcommand{\ct}[1]{\ensuremath{\mathit{ct}(#1)}}
+% \newcommand{\cte}[2]{\ensuremath{\mathit{ct}_{\langle #1\rangle}(#2)}}
+\newcommand{\close}[1]{\ensuremath{#1\raisebox{1pt}{$\uparrow$}}}
+
+\newcommand{\htag}[2]{\ensuremath{\mathit{#1}\agg{#2}}}
+\newcommand{\htagg}[4]{\ensuremath{\mathit{#1}\agg{#2}\mathrel{#3}#4}}
+\newcommand{\htaggg}[4]{\ensuremath{\mathit{#1} {#2 }\mathrel{#3}#4}}
+\newcommand{\vals}[2]{\ensuremath{\mathcal{V}_{#1,#2}}}
+\newcommand{\eval}[2]{\ensuremath{\mathit{eval}}_{\langle #1,#2\rangle}}
+% \newcommand{\evalgz}[2]{\ensuremath{\mathit{eval}^{\gz}_{\langle #1,#2\rangle}}}
+% \newcommand{\evalf}[2]{\ensuremath{\mathit{eval}^{\f}_{\langle #1,#2\rangle}}}
+% \newcommand{\evals}[3]{\ensuremath{\mathit{eval}^{#1}_{\langle #2,#3\rangle}}}
+% \newcommand{\evalcl}[1]{\ensuremath{\mathit{eval}_{#1}}}
+
+\newcommand{\evalgz}[2]{\ensuremath{{\gz}_{\langle #1,#2\rangle}}}
+\newcommand{\evalf}[2]{\ensuremath{{\f}_{\langle #1,#2\rangle}}}
+\newcommand{\evals}[3]{\ensuremath{{#1}_{\langle #2,#3\rangle}}}
+\newcommand{\evalcl}[1]{\ensuremath{\mathit{eval}_{#1}}}
+\newcommand{\evall}[1]{\ensuremath{\mathit{eval}}_{#1}}
+\newcommand{\evallgz}[1]{\ensuremath{\mathit{eval}^{\mathtt{gz}}_{#1}}}
+
+\newcommand{\modelscl}{\ensuremath{\models_{cl}}}
+\newcommand{\eqdef}{%
+  \mathrel{\vbox{\offinterlineskip\ialign{%
+    \hfil##\hfil\cr%
+    $\scriptscriptstyle\mathrm{def}$\cr%
+    \noalign{\kern1pt}%
+    $=$\cr%
+    \noalign{\kern-0.1pt}%
+}}}}
+
+\newcommand{\sysfont}{\textit}
+\newcommand{\clingo}{\sysfont{clingo}}
+\newcommand{\clingcon}{\sysfont{clingcon}}
+\newcommand{\clingoDL}{\clingo{\small\textnormal{[}\textsc{DL}\textnormal{]}}}
+\newcommand{\dlprogram}{\textit{DL}-program}
+\newcommand{\code}[1]{\texttt{#1}}
+\newcommand{\ground}{variable-free}
+\newcommand{\modelsgz}{\models_{\gz}}
+\newcommand{\modelsf}{\models_{\f}}
+\newcommand{\modelss}{\models_{\sem}}
+\newcommand{\modelsp}[1]{\models_{#1}}
+\newcommand{\Atoms}{\mathit{Atoms}}
+\newcommand{\Head}{\mathit{H}}
+\newcommand{\HeadA}{\mathit{\Head_A}}
+\newcommand{\HeadB}{\mathit{\Head_B}}
+\newcommand{\Headp}{\mathit{\Head^+}}
+\newcommand{\Headn}{\mathit{\Head^-}}
+\newcommand{\Body}{\mathit{B}}
+\newcommand{\Bodyp}{\mathit{\Body^+}}
+\newcommand{\Bodyn}{\mathit{\Body^-}}
+\newcommand{\var}{\mathit{var}}
+\newcommand{\Cond}{\mathit{Cond}}
+\newcommand{\tuple}[1]{\langle #1 \rangle}
+\newcommand{\restr}[2]{{#1|}_{\hspace{-1pt}#2}}
+\newcommand{\df}[1]{\mathit{def}(#1)}
+\newcommand{\HTC}{\ensuremath{\mathit{HT}_{\!C}}} % {\mathit{HT}_C}
+\newcommand{\HT}{\ensuremath{\mathit{HT}}}
+\newcommand{\X}{\ensuremath{\mathcal{X}}}
+\newcommand{\D}{\ensuremath{\mathcal{D}}}
+\newcommand{\Du}{\ensuremath{\mathcal{D}_{\mathbf{u}}}}
+\newcommand{\T}{\ensuremath{\mathcal{T}}}
+\newcommand{\C}{\ensuremath{\mathcal{C}}}
+\newcommand{\ET}{\ensuremath{\mathcal{T}^e}}
+\newcommand{\BT}{\ensuremath{\mathcal{T}^b}}
+\newcommand{\BC}{\ensuremath{\mathcal{C}^b}}
+\newcommand{\Cgr}{\ensuremath{\mathcal{C}^*}}
+\newcommand{\F}{\ensuremath{\mathcal{F}}}
+\newcommand{\I}{\ensuremath{\mathcal{I}}}
+\newcommand{\V}{\ensuremath{\mathcal{V}}}
+%\newcommand{\P}{\ensuremath{\mathcal{P}}}
+\newcommand{\A}{\ensuremath{\mathcal{A}}}
+\newcommand{\Piref}[1]{\Pi_{\ref{#1}}}
+\newcommand{\vars}[1]{\ensuremath{\mathit{vars}(#1)}}
+\newcommand{\varsp}[1]{\ensuremath{\mathit{vars}^{a}(#1)}}
+\newcommand{\atoms}[1]{\ensuremath{\mathit{atoms}(#1)}}
+\newcommand{\At}[1]{\ensuremath{\mathit{At}(#1)}}
+\newcommand{\val}{\ensuremath{v}} % {V}
+% \newcommand{\t}{\ensuremath{\mathbf{t}}} % {\boldsymbol{t}}
+\newcommand{\gz}{\ensuremath{\mathit{vc}}} % {\boldsymbol{f}}
+\newcommand{\f}{\ensuremath{\mathit{df}}} % {\boldsymbol{f}}
+\newcommand{\ff}{\ensuremath{\mathit{F}}} % {\boldsymbol{f}}
+\newcommand{\undefined}{\ensuremath{\mathbf{u}}} % {\boldsymbol{u}}
+\newcommand{\sem}{\ensuremath{\kappa}} % {\boldsymbol{u}}
+\newcommand{\ass}[3]{#1 := #2 \, .. \, #3}
+\newcommand{\LC}{\ensuremath{\mathit{LC}}}
+\newcommand{\DF}{\ensuremath{\boldsymbol{D\hspace{-1.2pt}F}}} % {\mathbf{DF}}
+\newcommand{\agg}[1]{\ensuremath{\dot{\{}#1\dot{\}}}} % {\text{\"\{}#1\text{\"\}}}
+\newcommand{\Z}{\ensuremath{\mathbb{Z}}}
+\newcommand{\LX}{\ensuremath{\mathbb{X}}}
+\newcommand{\HU}{\ensuremath{\mathbb{U}}}
+\newcommand{\Gra}{\ensuremath{\mathit{G}^a}}
+\newcommand{\Gr}{\ensuremath{\mathit{G}}}
+\newcommand{\Def}{\delta}
+\newcommand{\grsep}{\,\big|\hspace{-3pt}\big|\hspace{-3pt}\big|\,}
+\newcommand{\isint}[1]{\ensuremath{\mathit{int}(#1)}}
+
+
+
+
+\let\olditem\item
+\let\oldenumerate\enumerate
+\let\oldendenumerate\endenumerate
+\let\olditemize\itemize
+\let\oldenditemize\enditemize
+\newcommand{\deitemize}{%
+\def\itemize{\def\item{}}
+\def\enditemize{\let\item\olditem}
+\def\enumerate{\let\item\olditem\oldenumerate}
+\def\endenumerate{\oldendenumerate\def\item{}}
+}
+
+\newcommand{\reitemize}{%
+\def\itemize{\olditemize}
+\def\enditemize{\oldenditemize}
+}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%% with bullets
+
+\newenvironment{Itemize}{\begin{itemize}[leftmargin=0pt]}{\end{itemize}}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%% without bullets
+
+\renewenvironment{Itemize}{\let\item\relax}{\let\item\olditemize}
+\renewenvironment{itemize}{\let\item\olditem\olditemize}{\oldenditemize\let\item\relax}
+\renewenvironment{enumerate}{\let\item\olditem\oldenumerate}{\oldendenumerate\let\item\relax}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+
+% Some aggregate names
+\def\sumf{\mathit{sum}}
+\newcommand\op{\mathit{op}}
+\newcommand\EX{\mathcal{EX}}
+
+\newcommand{\appendblank}{\ensuremath{\circ}}
+\newcommand\theory[2]{\tuple{#1,#2}}
+\newcommand{\aggs}{\mathit{agg}}
+\newcommand{\levels}{\ell}
+\newcommand{\level}[1]{\levels(#1)}
+\newcommand{\gzsemantics}{\mbox{\gz-semantics}\xspace}
+\newcommand{\fsemantics}{\mbox{\f-semantics}\xspace}
+\newcommand{\sequilibrium}{\mbox{\sem-equilibrium}\xspace}
+\newcommand{\gzequilibrium}{\mbox{\gz-equilibrium}\xspace}
+\newcommand{\fequilibrium}{\mbox{\f-equilibrium}\xspace}
+\newcommand{\sstable}{\mbox{\sem-stable}\xspace}
+\newcommand{\gzstable}{\mbox{\gz-stable}\xspace}
+\newcommand{\fstable}{\mbox{\f-stable}\xspace}
+\def\kmapping{selection function}
+\def\kmappings{{\kmapping}s}
+%%% Local Variables:
+%%% mode: latex
+%%% TeX-master: "paper"
+%%% End:
