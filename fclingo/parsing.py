@@ -488,7 +488,7 @@ def _evaluate_term(term):
             raise RuntimeError("Invalid Interval")
 
         # functions
-        return clingo.Function(term.name, (_evaluate_term(x) for x in term.arguments))
+        return clingo.Function(term.name, [_evaluate_term(x) for x in term.arguments])
 
     # constants
     if term.type == clingo.TheoryTermType.Symbol:
@@ -517,7 +517,7 @@ def _negate_relation(name):
     raise RuntimeError("unknown relation")
 
 
-class HeadBodyTransformer(Transformer):
+#class HeadBodyTransformer(Transformer):
     """
     Transforms sum/diff theory atoms in heads and bodies of rules by turning
     the name of each theory atom into a function with head or body as argument.
@@ -698,3 +698,18 @@ def transform(builder, s, shift):
     """
     t = HeadBodyTransformer(shift)
     clingo.parse_program(s, lambda stm: builder.add(t.visit(stm)))
+
+
+class HeadBodyTransformer(ast.Transformer):
+    def visit_Literal(self, lit, in_lit=False):
+        return lit.update(**self.visit_children(lit, True))
+
+    def visit_TheoryAtom(self, atom, in_lit=False):
+        term = atom.term
+        if term.name in ["sum", "diff", "in", "max", "min", "count"] and not term.arguments:
+            loc = "body" if in_lit else "head"
+            atom = atom.update(term=ast.Function(
+                term.location, term.name,
+                [ast.Function(term.location, loc, [], False)],
+                False))
+        return atom

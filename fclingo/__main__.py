@@ -7,8 +7,10 @@ from collections import OrderedDict
 from textwrap import dedent
 
 import clingo
+from clingo.ast import ProgramBuilder, parse_files
 
 from fclingo import AUX, THEORY, Propagator, Translator, transform
+from fclingo.parsing import HeadBodyTransformer
 
 _FALSE = ["0", "no", "false"]
 _TRUE = ["1", "yes", "true"]
@@ -316,6 +318,7 @@ class FclingoApp(clingo.Application):
 
     def _on_statistics(self, step, akku):
         self._propagator.on_statistics(step, akku)
+        return True
 
     def _read(self, path):
         if path == "-":
@@ -334,15 +337,17 @@ class FclingoApp(clingo.Application):
         if not files:
             files = ["-"]
 
-        with prg.builder() as b:
-            for path in files:
-                transform(b, self._read(path), False)
+        with ProgramBuilder(prg) as bld:
+            hbt = HeadBodyTransformer()
+            parse_files(files, lambda stm: bld.add(hbt.visit(stm)))
+            #for path in files:
+            #    transform(b, self._read(path), False)
 
         prg.ground([("base", [])])
         translator = Translator(prg, self.config, self._propagator.config)
         self._propagator.constraints = translator.translate()
 
-        prg.solve(on_statistics=self._on_statistics, on_model=self.on_model)
+        prg.solve(on_model=self.on_model)
 
 
 if __name__ == "__main__":
