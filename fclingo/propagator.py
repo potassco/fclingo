@@ -185,14 +185,14 @@ class Propagator(object):
         shown = (var for var in self._var_map.items() if self.shown(var))
         assignment = self._state(model.thread_id).get_assignment(shown)
         model.extend(
-            clingo.Function("__csp", [var, value])
+            [clingo.Function("val", [var, clingo.Number(value)])
             for var, value in assignment
-            if self.shown(var)
+            if self.shown(var)]
         )
 
         if self.has_minimize:
             bound = self.get_minimize_value(model.thread_id)
-            model.extend([clingo.Function("__csp_cost", [bound])])
+            model.extend([clingo.Function("cost", [clingo.Number(bound)])])
             if self._minimize_bound is None or bound - 1 < self._minimize_bound:
                 self.statistics.cost = bound
                 self.update_minimize(bound - 1)
