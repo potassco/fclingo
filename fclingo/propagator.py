@@ -6,6 +6,9 @@ from collections import OrderedDict
 
 import clingo
 
+from fclingo.astutil import match
+from fclingo.translator import ConstraintAtom
+
 from .base import Config, ControlClauseCreator, InitClauseCreator, Statistics
 from .constraints import DistinctConstraint, MinimizeConstraint, SumConstraint
 from .parsing import AbstractConstraintBuilder, parse_theory, simplify
@@ -182,12 +185,13 @@ class Propagator(object):
         """
         Extend the model with the assignment and take care of minimization.
         """
-        shown = (var for var in self._var_map.items() if self.shown(var))
+        shown = (var for var in self._var_map.items() if self.shown(var[0]))
         assignment = self._state(model.thread_id).get_assignment(shown)
         model.extend(
-            [clingo.Function("val", [var, clingo.Number(value)])
-            for var, value in assignment
-            if self.shown(var)]
+            [
+                clingo.Function("val", [var, clingo.Number(value)])
+                for var, value in assignment
+            ]
         )
 
         if self.has_minimize:
@@ -368,7 +372,20 @@ class Propagator(object):
         if len(self.constraints) == 0:
             parse_theory(builder, init.theory_atoms)
         else:
-            parse_theory(builder, self.constraints)
+            parse_theory(
+                builder,
+                self.constraints.union(
+                    [
+                        ConstraintAtom.copy(atom)
+                        for atom in init.theory_atoms
+                        if match(atom.term, "distinct", 0)
+                        or match(atom.term, "show", 0)
+                        or match(atom.term, "dom", 0)
+                        or match(atom.term, "minimize", 0)
+                        or match(atom.term, "maximize", 0)
+                    ]
+                ),
+            )
 
         # gather bounds of states in master
         master = self._state(0)

@@ -4,7 +4,7 @@ Basic tests checking the whole system.
 
 import unittest
 
-from .fclingo.tests import Solver, solve
+from tests import Solver, solve
 
 # pylint: disable=missing-docstring
 
@@ -185,7 +185,7 @@ class TestMain(unittest.TestCase):
         )
         self.assertEqual(solve("&distinct { 0*x; 0*y }.", 0, 1), [])
         self.assertEqual(solve("&distinct { 0 }.", 0, 1), [[]])
-        self.assertEqual(solve("&distinct { 0; 0 }.", 0, 1), [])
+        self.assertEqual(solve("&distinct { 0; 0 }.", 0, 1), [[]])
         self.assertEqual(solve("&distinct { 0; 0+0 }.", 0, 1), [])
         self.assertEqual(solve("&distinct { 0; 1 }.", 0, 1), [[]])
         self.assertEqual(solve("&distinct { 2*x; (1+1)*x }.", 0, 1), [])
@@ -349,13 +349,12 @@ class TestMain(unittest.TestCase):
         )
 
     def test_set(self):
-        self.assertEqual(solve("&sum { 1;1 } = x."), [[("x", 2)]])
-        self.assertEqual(solve("&sum { 1 : X=1..3 } = x."), [[("x", 3)]])
-        self.assertEqual(solve("&sum { 1 : X=(1;2;3) } = x."), [[("x", 3)]])
-        self.assertEqual(solve("&sum { 1 : 1=(X;Y;Z) } = x."), [[("x", 3)]])
+        self.assertEqual(solve("&sum { 1,0;1,1 } = x."), [[("x", 2)]])
+        self.assertEqual(solve("&sum { 1,X : X=1..3 } = x."), [[("x", 3)]])
+        self.assertEqual(solve("&sum { 1,X : X=(1;2;3) } = x."), [[("x", 3)]])
         self.assertEqual(
             solve(
-                "&sum { v(X) } = X :- X=1..3. &sum { v(X) : X=1..2; v(X) : X=2..3 } = x."
+                "&sum { v(X) } = X :- X=1..3. &sum { v(X),0 : X=1..2; v(X),1 : X=2..3 } = x."
             ),
             [[("v(1)", 1), ("v(2)", 2), ("v(3)", 3), ("x", 8)]],
         )

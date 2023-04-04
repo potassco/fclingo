@@ -4,7 +4,7 @@ Test cases for HTc to Clingcon translation
 
 import unittest
 
-from .fclingo.tests import solve_htc
+from tests import solve_htc
 
 # pylint: disable=missing-docstring, line-too-long
 
@@ -14,16 +14,6 @@ SOL_TAXES = [
         "lives(paul,germany)",
         "max_taxes(mary)",
         "min_taxes(paul)",
-        ("aux(0)", -32000),
-        ("aux(1)", -32000),
-        ("aux(2)", 15000),
-        ("aux(3)", 15000),
-        ("aux(4)", -32000),
-        ("aux(5)", 15000),
-        ("aux(6)", 0),
-        ("aux(7)", 0),
-        ("aux(8)", 15000),
-        ("aux(9)", 32000),
         ("deduction(mary)", 10000),
         ("deduction(paul)", 0),
         ("max", 32000),
@@ -32,7 +22,7 @@ SOL_TAXES = [
         ("rate(paul)", 25),
         ("tax(mary)", 32000),
         ("tax(paul)", 15000),
-        ("total(germany)", 47000),
+        ("total(germany)", 32000),
         ("total(luxemburg)", 0),
     ],
     [
@@ -40,16 +30,6 @@ SOL_TAXES = [
         "lives(paul,germany)",
         "max_taxes(mary)",
         "min_taxes(paul)",
-        ("aux(0)", -31999),
-        ("aux(1)", -31999),
-        ("aux(2)", 15000),
-        ("aux(3)", 15000),
-        ("aux(4)", -31999),
-        ("aux(5)", 15000),
-        ("aux(6)", 0),
-        ("aux(7)", 0),
-        ("aux(8)", 15000),
-        ("aux(9)", 31999),
         ("deduction(mary)", 10001),
         ("deduction(paul)", 0),
         ("max", 31999),
@@ -58,7 +38,7 @@ SOL_TAXES = [
         ("rate(paul)", 25),
         ("tax(mary)", 31999),
         ("tax(paul)", 15000),
-        ("total(germany)", 46999),
+        ("total(germany)", 31999),
         ("total(luxemburg)", 0),
     ],
     [
@@ -66,16 +46,6 @@ SOL_TAXES = [
         "lives(paul,luxemburg)",
         "max_taxes(mary)",
         "min_taxes(paul)",
-        ("aux(0)", -32000),
-        ("aux(1)", -32000),
-        ("aux(2)", 13800),
-        ("aux(3)", 13800),
-        ("aux(4)", -32000),
-        ("aux(5)", 13800),
-        ("aux(6)", 13800),
-        ("aux(7)", 0),
-        ("aux(8)", 0),
-        ("aux(9)", 32000),
         ("deduction(mary)", 10000),
         ("deduction(paul)", 0),
         ("max", 32000),
@@ -84,7 +54,7 @@ SOL_TAXES = [
         ("rate(paul)", 23),
         ("tax(mary)", 32000),
         ("tax(paul)", 13800),
-        ("total(germany)", 32000),
+        ("total(germany)", 45800),
         ("total(luxemburg)", 13800),
     ],
     [
@@ -92,16 +62,6 @@ SOL_TAXES = [
         "lives(paul,luxemburg)",
         "max_taxes(mary)",
         "min_taxes(paul)",
-        ("aux(0)", -31999),
-        ("aux(1)", -31999),
-        ("aux(2)", 13800),
-        ("aux(3)", 13800),
-        ("aux(4)", -31999),
-        ("aux(5)", 13800),
-        ("aux(6)", 13800),
-        ("aux(7)", 0),
-        ("aux(8)", 0),
-        ("aux(9)", 31999),
         ("deduction(mary)", 10001),
         ("deduction(paul)", 0),
         ("max", 31999),
@@ -110,7 +70,7 @@ SOL_TAXES = [
         ("rate(paul)", 23),
         ("tax(mary)", 31999),
         ("tax(paul)", 13800),
-        ("total(germany)", 31999),
+        ("total(germany)", 45799),
         ("total(luxemburg)", 13800),
     ],
     [
@@ -118,16 +78,6 @@ SOL_TAXES = [
         "lives(paul,germany)",
         "max_taxes(mary)",
         "min_taxes(paul)",
-        ("aux(0)", -26000),
-        ("aux(1)", -26000),
-        ("aux(2)", 15000),
-        ("aux(3)", 15000),
-        ("aux(4)", -26000),
-        ("aux(5)", 15000),
-        ("aux(6)", 0),
-        ("aux(7)", 26000),
-        ("aux(8)", 15000),
-        ("aux(9)", 0),
         ("deduction(mary)", 10000),
         ("deduction(paul)", 0),
         ("max", 26000),
@@ -136,7 +86,7 @@ SOL_TAXES = [
         ("rate(paul)", 25),
         ("tax(mary)", 26000),
         ("tax(paul)", 15000),
-        ("total(germany)", 15000),
+        ("total(germany)", 0),
         ("total(luxemburg)", 26000),
     ],
     [
@@ -144,16 +94,6 @@ SOL_TAXES = [
         "lives(paul,germany)",
         "max_taxes(mary)",
         "min_taxes(paul)",
-        ("aux(0)", -25999),
-        ("aux(1)", -25999),
-        ("aux(2)", 15000),
-        ("aux(3)", 15000),
-        ("aux(4)", -25999),
-        ("aux(5)", 15000),
-        ("aux(6)", 0),
-        ("aux(7)", 25999),
-        ("aux(8)", 15000),
-        ("aux(9)", 0),
         ("deduction(mary)", 10001),
         ("deduction(paul)", 0),
         ("max", 25999),
@@ -162,7 +102,7 @@ SOL_TAXES = [
         ("rate(paul)", 25),
         ("tax(mary)", 25999),
         ("tax(paul)", 15000),
-        ("total(germany)", 15000),
+        ("total(germany)", 0),
         ("total(luxemburg)", 25999),
     ],
     [
@@ -170,16 +110,6 @@ SOL_TAXES = [
         "lives(paul,luxemburg)",
         "max_taxes(mary)",
         "min_taxes(paul)",
-        ("aux(0)", -26000),
-        ("aux(1)", -26000),
-        ("aux(2)", 13800),
-        ("aux(3)", 13800),
-        ("aux(4)", -26000),
-        ("aux(5)", 13800),
-        ("aux(6)", 13800),
-        ("aux(7)", 26000),
-        ("aux(8)", 0),
-        ("aux(9)", 0),
         ("deduction(mary)", 10000),
         ("deduction(paul)", 0),
         ("max", 26000),
@@ -188,7 +118,7 @@ SOL_TAXES = [
         ("rate(paul)", 23),
         ("tax(mary)", 26000),
         ("tax(paul)", 13800),
-        ("total(germany)", 0),
+        ("total(germany)", 13800),
         ("total(luxemburg)", 39800),
     ],
     [
@@ -196,16 +126,6 @@ SOL_TAXES = [
         "lives(paul,luxemburg)",
         "max_taxes(mary)",
         "min_taxes(paul)",
-        ("aux(0)", -25999),
-        ("aux(1)", -25999),
-        ("aux(2)", 13800),
-        ("aux(3)", 13800),
-        ("aux(4)", -25999),
-        ("aux(5)", 13800),
-        ("aux(6)", 13800),
-        ("aux(7)", 25999),
-        ("aux(8)", 0),
-        ("aux(9)", 0),
         ("deduction(mary)", 10001),
         ("deduction(paul)", 0),
         ("max", 25999),
@@ -214,7 +134,7 @@ SOL_TAXES = [
         ("rate(paul)", 23),
         ("tax(mary)", 25999),
         ("tax(paul)", 13800),
-        ("total(germany)", 0),
+        ("total(germany)", 13800),
         ("total(luxemburg)", 39799),
     ],
 ]
@@ -222,26 +142,6 @@ SOL_TAXES = [
 SOL_CAR = [
     [
         "acc(11350,4)",
-        "def(p(0))",
-        "def(p(1))",
-        "def(p(2))",
-        "def(p(3))",
-        "def(p(4))",
-        "def(p(5))",
-        "def(p(6))",
-        "def(p(7))",
-        "def(p(8))",
-        "def(rdlimit)",
-        "def(rdpos)",
-        "def(s(0))",
-        "def(s(1))",
-        "def(s(2))",
-        "def(s(3))",
-        "def(s(4))",
-        "def(s(5))",
-        "def(s(6))",
-        "def(s(7))",
-        "def(s(8))",
         "def_s(0)",
         "def_s(1)",
         "def_s(2)",
@@ -305,10 +205,7 @@ class TestMain(unittest.TestCase):
                 -10,
                 10,
             ),
-            [
-                ["a", "def(aux(0))", "def(x)", ("aux(0)", 1), ("x", 1)],
-                ["def(aux(0))", "def(x)", ("aux(0)", 0), ("x", 0)],
-            ],
+            [[("x", 0)], ["a", ("x", 1)]],
         )
         self.assertEqual(
             solve_htc(
@@ -320,10 +217,7 @@ class TestMain(unittest.TestCase):
                 -10,
                 10,
             ),
-            [
-                ["a", "def(aux(0))", "def(x)", ("aux(0)", 1), ("x", 1)],
-                ["b", "def(aux(0))", "def(x)", ("aux(0)", 0), ("x", 1)],
-            ],
+            [["a", ("x", 1)], ["b", ("x", 1)]],
         )
         self.assertEqual(
             solve_htc(
@@ -347,7 +241,7 @@ class TestMain(unittest.TestCase):
                 -10,
                 10,
             ),
-            [["def(x)", ("x", 1), ("y", 0), ("z", 0)]],
+            [[("x", 1), ("y", 0), ("z", 0)]],
         )
         self.assertEqual(
             solve_htc(
@@ -359,18 +253,7 @@ class TestMain(unittest.TestCase):
                 -10,
                 10,
             ),
-            [
-                ["a", ("aux(0)", 0), ("x", 0), ("y", 0), ("z", 0)],
-                [
-                    "def(aux(0))",
-                    "def(x)",
-                    "def(y)",
-                    ("aux(0)", 0),
-                    ("x", 1),
-                    ("y", 1),
-                    ("z", 0),
-                ],
-            ],
+            [[("x", 1), ("y", 1), ("z", 0)], ["a", ("x", 0), ("y", 0), ("z", 0)]],
         )
         self.assertEqual(
             solve_htc(
@@ -382,7 +265,7 @@ class TestMain(unittest.TestCase):
                 -10,
                 10,
             ),
-            [[("x", 0)], ["a", "b", "def(x)", ("x", 1)]],
+            [[("x", 0)], ["a", "b", ("x", 1)]],
         )
         self.assertEqual(
             solve_htc(
@@ -392,7 +275,7 @@ class TestMain(unittest.TestCase):
                 -10,
                 10,
             ),
-            [["def(x)", ("x", 0)], ["def(x)", ("x", 1)], ["def(x)", ("x", 2)]],
+            [[("x", 0)], [("x", 1)], [("x", 2)]],
         )
         self.assertEqual(
             solve_htc(
@@ -427,8 +310,8 @@ class TestMain(unittest.TestCase):
                 10,
             ),
             [
-                ["def(x)", "def(y)", "def(z)", ("x", 1), ("y", 1), ("z", 2)],
-                ["def(x)", "def(y)", "def(z)", ("x", 2), ("y", 1), ("z", 2)],
+                [("x", 1), ("y", 1), ("z", 2)],
+                [("x", 2), ("y", 1), ("z", 2)],
             ],
         )
         self.assertEqual(
@@ -443,9 +326,9 @@ class TestMain(unittest.TestCase):
                 10,
             ),
             [
-                ["a", "def(x)", "def(y)", "def(z)", ("x", 1), ("y", 1), ("z", 2)],
-                ["a", "def(x)", "def(y)", "def(z)", ("x", 2), ("y", 1), ("z", 2)],
-                ["def(y)", ("x", 0), ("y", 1), ("z", 0)],
+                [("x", 0), ("y", 1), ("z", 0)],
+                ["a", ("x", 1), ("y", 1), ("z", 2)],
+                ["a", ("x", 2), ("y", 1), ("z", 2)],
             ],
         )
 
@@ -458,7 +341,7 @@ class TestMain(unittest.TestCase):
                 -10,
                 10,
             ),
-            [["def(aux(0))", "def(x)", ("aux(0)", 1), ("x", 1)]],
+            [[("x", 1)]],
         )
         self.assertEqual(
             solve_htc(
@@ -469,7 +352,7 @@ class TestMain(unittest.TestCase):
                 -10,
                 10,
             ),
-            [["a", "def(aux(0))", "def(x)", ("aux(0)", 1), ("x", 1)]],
+            [["a", ("x", 1)]],
         )
         self.assertEqual(
             solve_htc(
@@ -482,21 +365,11 @@ class TestMain(unittest.TestCase):
             ),
             [
                 [
-                    "a",
-                    "def(aux(0))",
-                    "def(aux(1))",
-                    "def(x)",
-                    ("aux(0)", 1),
-                    ("aux(1)", 1),
-                    ("x", 1),
+                    ("x", 2),
                 ],
                 [
-                    "def(aux(0))",
-                    "def(aux(1))",
-                    "def(x)",
-                    ("aux(0)", 10),
-                    ("aux(1)", 2),
-                    ("x", 2),
+                    "a",
+                    ("x", 1),
                 ],
             ],
         )
@@ -512,21 +385,11 @@ class TestMain(unittest.TestCase):
             ),
             [
                 [
-                    "a",
-                    "b",
-                    "def(aux(0))",
-                    "def(aux(1))",
-                    "def(x)",
-                    ("aux(0)", 1),
-                    ("aux(1)", 1),
                     ("x", 1),
                 ],
                 [
-                    "def(aux(0))",
-                    "def(aux(1))",
-                    "def(x)",
-                    ("aux(0)", 10),
-                    ("aux(1)", 3),
+                    "a",
+                    "b",
                     ("x", 1),
                 ],
             ],
@@ -551,7 +414,7 @@ class TestMain(unittest.TestCase):
                 -10,
                 10,
             ),
-            [["def(aux(0))", "def(x)", ("aux(0)", -3), ("x", 3)]],
+            [[("x", 3)]],
         )
         self.assertEqual(
             solve_htc(
@@ -562,7 +425,7 @@ class TestMain(unittest.TestCase):
                 -10,
                 10,
             ),
-            [["a", "def(aux(0))", "def(x)", ("aux(0)", -3), ("x", 3)]],
+            [["a", ("x", 3)]],
         )
         self.assertEqual(
             solve_htc(
@@ -575,21 +438,11 @@ class TestMain(unittest.TestCase):
             ),
             [
                 [
-                    "a",
-                    "def(aux(0))",
-                    "def(aux(1))",
-                    "def(x)",
-                    ("aux(0)", 4),
-                    ("aux(1)", -4),
-                    ("x", 4),
+                    ("x", 3),
                 ],
                 [
-                    "def(aux(0))",
-                    "def(aux(1))",
-                    "def(x)",
-                    ("aux(0)", -10),
-                    ("aux(1)", -3),
-                    ("x", 3),
+                    "a",
+                    ("x", 4),
                 ],
             ],
         )
@@ -606,29 +459,18 @@ class TestMain(unittest.TestCase):
             [
                 [
                     "a",
-                    "def(aux(0))",
-                    "def(aux(1))",
-                    "def(x)",
-                    ("aux(0)", -10),
-                    ("aux(1)", -1),
                     ("x", 2),
                 ],
                 [
                     "b",
-                    "def(aux(0))",
-                    "def(aux(1))",
-                    "def(x)",
-                    ("aux(0)", 2),
-                    ("aux(1)", -2),
                     ("x", 2),
                 ],
             ],
         )
 
     def test_taxes(self):
-        self.assertEqual(
-            solve_htc(
-                """\
+        answers = solve_htc(
+            """\
             person(paul;mary).
             region(luxemburg;germany).
             rate(germany,  25000, 15).
@@ -659,9 +501,12 @@ class TestMain(unittest.TestCase):
             #show min_taxes/1.
             #show max_taxes/1.
             """,
-                -100000,
-                100000,
-            ),
+            -100000,
+            100000,
+        )
+        print(answers)
+        self.assertEqual(
+            answers,
             SOL_TAXES,
         )
 

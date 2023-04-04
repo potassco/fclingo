@@ -27,3 +27,4 @@ max_taxes(P) :- &max{ tax(P') : person(P') } = tax(P), person(P).
 #show lives/2.
 #show min_taxes/1.
 #show max_taxes/1.
+&show{tax/1; deduction(P) : person(P)}.

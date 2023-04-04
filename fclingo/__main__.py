@@ -9,7 +9,7 @@ from textwrap import dedent
 import clingo
 from clingo.ast import ProgramBuilder, parse_files
 
-from fclingo import AUX, THEORY, Propagator, Translator, transform
+from fclingo import THEORY, Propagator, Translator
 from fclingo.parsing import HeadBodyTransformer
 
 _FALSE = ["0", "no", "false"]
@@ -46,42 +46,6 @@ class FclingoApp(clingo.Application):
         Report models to the propagator.
         """
         self._propagator.on_model(model)
-
-    def print_model(self, model, default_printer):
-        """
-        Print the current model and the assignments of integer variables.
-        """
-        # pylint: disable=unused-argument
-
-        # Note: the thread specific state is gone here so we have to print
-        # using the model only.
-
-        sys.stdout.write(
-            " ".join(str(symbol) for symbol in sorted(model.symbols(shown=True)))
-        )
-        sys.stdout.write("\n")
-
-        cost = None
-
-        sys.stdout.write("Valid assignment for constraints found:\n")
-        sep = ""
-        for symbol in sorted(model.symbols(theory=True)):
-            if symbol.match("__csp", 2):
-                n, v = symbol.arguments
-                if (not self.config.print_aux and n.name == AUX) or not model.contains(
-                    clingo.Function("def", [n])
-                ):
-                    continue
-                sys.stdout.write("{}{}={}".format(sep, n, v))
-                sep = " "
-            elif symbol.match("__csp_cost", 1):
-                cost = symbol.arguments[0]
-        sys.stdout.write("\n")
-
-        if cost is not None:
-            sys.stdout.write("Cost: {}\n".format(cost))
-
-        sys.stdout.flush()
 
     def _parse_int(self, config, attr, min_value=None, max_value=None):
         """
@@ -340,12 +304,10 @@ class FclingoApp(clingo.Application):
         with ProgramBuilder(prg) as bld:
             hbt = HeadBodyTransformer()
             parse_files(files, lambda stm: bld.add(hbt.visit(stm)))
-            #for path in files:
-            #    transform(b, self._read(path), False)
 
         prg.ground([("base", [])])
         translator = Translator(prg, self.config, self._propagator.config)
-        self._propagator.constraints = translator.translate()
+        translator.translate(self._propagator)
 
         prg.solve(on_model=self.on_model)
 

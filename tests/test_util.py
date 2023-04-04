@@ -4,7 +4,7 @@ Tests checking utility functions.
 
 import unittest
 
-import csp.util as util
+import fclingo.util as util
 
 # pylint: disable=missing-docstring
 

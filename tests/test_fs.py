@@ -4,7 +4,7 @@ Basic tests checking the whole system.
 
 import unittest
 
-from .fclingo.tests import solve
+from tests import solve
 
 FSI = """\
             machine(1).      machine(2).

@@ -5,8 +5,10 @@ Basic functions to run tests.
 import collections
 
 import clingo
+from clingo.ast import ProgramBuilder, parse_string
 
-from .fclingo import THEORY, Propagator, Translator, transform
+from fclingo import AUX, THEORY, Propagator, Translator
+from fclingo.parsing import HeadBodyTransformer
 
 ConfGlobalEntry = collections.namedtuple(
     "ConfGlobalEntry",
@@ -103,8 +105,11 @@ class Solver(object):
 
         step = "step{}".format(self.step)
 
-        with self.prg.builder() as b:
-            transform(b, "#program {}.\n{}".format(step, s), True)
+        with ProgramBuilder(self.prg) as bld:
+            hbt = HeadBodyTransformer()
+            parse_string(
+                "#program {}.\n{}".format(step, s), lambda stm: bld.add(hbt.visit(stm))
+            )
         self.prg.ground([(step, [])])
 
         self.bound = bound
@@ -152,12 +157,13 @@ class Solver(object):
         Translate and solve program s.
         """
         # pylint: disable=unsubscriptable-object,cell-var-from-loop,no-member
-        with self.prg.builder() as b:
-            transform(b, s, True)
+        with ProgramBuilder(self.prg) as bld:
+            hbt = HeadBodyTransformer()
+            parse_string(s, lambda stm: bld.add(hbt.visit(stm)))
 
         self.prg.ground([("base", [])])
         translator = Translator(self.prg, AppConfig(), self.prp.config)
-        self.prp.constraints = translator.translate()
+        translator.translate(self.prp)
 
         ret = []
         self.prg.solve(on_model=lambda m: ret.append(self._parse_model(m)))

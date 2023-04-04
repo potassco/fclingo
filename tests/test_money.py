@@ -7,7 +7,7 @@ constraints should we ever implement them.
 
 import unittest
 
-from .fclingo.tests import solve
+from tests import solve
 
 DOM = """\
 &sum { X } <= 9 :- _letter(X).
