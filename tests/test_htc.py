@@ -200,7 +200,7 @@ class TestMain(unittest.TestCase):
             solve_htc(
                 """\
             {a}.
-            &sum{1:a} = x.
+            &fsum{1:a} = x.
             """,
                 -10,
                 10,
@@ -211,8 +211,8 @@ class TestMain(unittest.TestCase):
             solve_htc(
                 """\
             {a}.
-            &sum{1} = x.
-            b :- &sum{1:a} < x.
+            &fsum{1} = x.
+            b :- &fsum{1:a} < x.
             """,
                 -10,
                 10,
@@ -222,8 +222,8 @@ class TestMain(unittest.TestCase):
         self.assertEqual(
             solve_htc(
                 """\
-            &sum{x}=1 :- &sum{ 1 : a }>= 0.
-            a :- &sum{x}=1.
+            &fsum{x}=1 :- &fsum{ 1 : a }>= 0.
+            a :- &fsum{x}=1.
             """,
                 -10,
                 10,
@@ -235,8 +235,8 @@ class TestMain(unittest.TestCase):
         self.assertEqual(
             solve_htc(
                 """\
-            &sum{1} =: x.
-            &sum{z} =: y.
+            &fsum{1} =: x.
+            &fsum{z} =: y.
             """,
                 -10,
                 10,
@@ -247,8 +247,8 @@ class TestMain(unittest.TestCase):
             solve_htc(
                 """\
             {a}.
-            &sum{z : a; 1} =: x.
-            &sum{x} =: y.
+            &fsum{z : a; 1} =: x.
+            &fsum{x} =: y.
             """,
                 -10,
                 10,
@@ -259,8 +259,8 @@ class TestMain(unittest.TestCase):
             solve_htc(
                 """\
             {a}.
-            &sum{1} =: x :- a.
-            b :- &sum{x} > 0.
+            &fsum{1} =: x :- a.
+            b :- &fsum{x} > 0.
             """,
                 -10,
                 10,
@@ -270,7 +270,7 @@ class TestMain(unittest.TestCase):
         self.assertEqual(
             solve_htc(
                 """\
-            &in{0..2} =: x.
+            &fin{0..2} =: x.
             """,
                 -10,
                 10,
@@ -280,7 +280,7 @@ class TestMain(unittest.TestCase):
         self.assertEqual(
             solve_htc(
                 """\
-            &in{y..z} =: x.
+            &fin{y..z} =: x.
             """,
                 -10,
                 10,
@@ -290,9 +290,9 @@ class TestMain(unittest.TestCase):
         self.assertEqual(
             solve_htc(
                 """\
-            &sum{z} = 1.
-            &sum{y} = 2.
-            &in{y..z} =: x.
+            &fsum{z} = 1.
+            &fsum{y} = 2.
+            &fin{y..z} =: x.
             """,
                 -10,
                 10,
@@ -302,9 +302,9 @@ class TestMain(unittest.TestCase):
         self.assertEqual(
             solve_htc(
                 """\
-            &sum{z} = 2.
-            &sum{y} = 1.
-            &in{y..z} =: x.
+            &fsum{z} = 2.
+            &fsum{y} = 1.
+            &fin{y..z} =: x.
             """,
                 -10,
                 10,
@@ -318,9 +318,9 @@ class TestMain(unittest.TestCase):
             solve_htc(
                 """\
             {a}.
-            &sum{z} = 2 :- a.
-            &sum{y} = 1.
-            &in{y..z} =: x.
+            &fsum{z} = 2 :- a.
+            &fsum{y} = 1.
+            &fin{y..z} =: x.
             """,
                 -10,
                 10,
@@ -336,7 +336,7 @@ class TestMain(unittest.TestCase):
         self.assertEqual(
             solve_htc(
                 """\
-            &min{3;2;1}=:x.
+            &fmin{3;2;1}=:x.
             """,
                 -10,
                 10,
@@ -346,8 +346,8 @@ class TestMain(unittest.TestCase):
         self.assertEqual(
             solve_htc(
                 """\
-            &sum{x} = 1.
-            a :- &min{3;x} < 2.
+            &fsum{x} = 1.
+            a :- &fmin{3;x} < 2.
             """,
                 -10,
                 10,
@@ -358,7 +358,7 @@ class TestMain(unittest.TestCase):
             solve_htc(
                 """\
             {a}.
-            &min{3;2;1:a}=:x.
+            &fmin{3;2;1:a}=:x.
             """,
                 -10,
                 10,
@@ -377,8 +377,8 @@ class TestMain(unittest.TestCase):
             solve_htc(
                 """\
             {b}.
-            &sum{x} = 1.
-            a :- &min{3; x:b} < 2.
+            &fsum{x} = 1.
+            a :- &fmin{3; x:b} < 2.
             """,
                 -10,
                 10,
@@ -397,7 +397,7 @@ class TestMain(unittest.TestCase):
         self.assertEqual(
             solve_htc(
                 """\
-            a :- &min{1:a} > 0.
+            a :- &fmin{1:a} > 0.
             """,
                 -10,
                 10,
@@ -409,7 +409,7 @@ class TestMain(unittest.TestCase):
         self.assertEqual(
             solve_htc(
                 """\
-            &max{3;2;1}=:x.
+            &fmax{3;2;1}=:x.
             """,
                 -10,
                 10,
@@ -419,8 +419,8 @@ class TestMain(unittest.TestCase):
         self.assertEqual(
             solve_htc(
                 """\
-            &sum{x} = 3.
-            a :- &max{1;x} > 2.
+            &fsum{x} = 3.
+            a :- &fmax{1;x} > 2.
             """,
                 -10,
                 10,
@@ -431,7 +431,7 @@ class TestMain(unittest.TestCase):
             solve_htc(
                 """\
             {a}.
-            &max{3;2;4:a}=:x.
+            &fmax{3;2;4:a}=:x.
             """,
                 -10,
                 10,
@@ -450,8 +450,8 @@ class TestMain(unittest.TestCase):
             solve_htc(
                 """\
             {b}.
-            &sum{x} = 2.
-            a :- &max{1; x:b} <= 1.
+            &fsum{x} = 2.
+            a :- &fmax{1; x:b} <= 1.
             """,
                 -10,
                 10,
@@ -485,17 +485,17 @@ class TestMain(unittest.TestCase):
 
             1 { lives(P,R) : region(R) } 1 :- person(P).
 
-            &sum{ 0 } =: deduction(P) :- person(P), not deduction(P,_,_).
-            &in{ L..H } =: deduction(P) :- deduction(P,L,H).
-            &sum{ T } =: rate(P) :- lives(P,R), income(P,I),
+            &fsum{ 0 } =: deduction(P) :- person(P), not deduction(P,_,_).
+            &fin{ L..H } =: deduction(P) :- deduction(P,L,H).
+            &fsum{ T } =: rate(P) :- lives(P,R), income(P,I),
                                     T = #max{ T' : rate(R,L,T'), I>=L}.
 
-            &sum{ I*rate(P)-100*deduction(P) } =: 100*tax(P) :- income(P,I).
-            &sum{ tax(P) : lives(P,R) } =: total(R) :- region(R).
-            &min{ tax(P) : person(P) } =: min.
-            &max{ tax(P) : person(P) } =: max.
-            min_taxes(P) :- &min{ tax(P') : person(P') } = tax(P), person(P).
-            max_taxes(P) :- &max{ tax(P') : person(P') } = tax(P), person(P).
+            &fsum{ I*rate(P)-100*deduction(P) } =: 100*tax(P) :- income(P,I).
+            &fsum{ tax(P) : lives(P,R) } =: total(R) :- region(R).
+            &fmin{ tax(P) : person(P) } =: min.
+            &fmax{ tax(P) : person(P) } =: max.
+            min_taxes(P) :- &fmin{ tax(P') : person(P') } = tax(P), person(P).
+            max_taxes(P) :- &fmax{ tax(P') : person(P') } = tax(P), person(P).
 
             #show lives/2.
             #show min_taxes/1.
@@ -504,7 +504,6 @@ class TestMain(unittest.TestCase):
             -100000,
             100000,
         )
-        print(answers)
         self.assertEqual(
             answers,
             SOL_TAXES,
@@ -517,23 +516,23 @@ class TestMain(unittest.TestCase):
             #const n = 8.
             time(0..n).        step(I,I+1) :- time(I), I < n.
 
-            &sum {s(I)+D} =: s(I') :-  acc(D,I'), step(I,I').
-            &sum {s(I)-D} =: s(I') :- slow(D,I'), step(I,I').
+            &fsum {s(I)+D} =: s(I') :-  acc(D,I'), step(I,I').
+            &fsum {s(I)-D} =: s(I') :- slow(D,I'), step(I,I').
 
-            &sum {s(I)} =: s(I') :- not &sum{ s(I') } != s(I), step(I,I').
+            &fsum {s(I)} =: s(I') :- not &fsum{ s(I') } != s(I), step(I,I').
 
-            def_s(I) :- time(I), &sum{s(I); -s(I)}=0.
+            def_s(I) :- time(I), &fsum{s(I); -s(I)}=0.
 
-            &sum {p(I)+s(I)} =: p(I') :- def_s(I), step(I,I').
+            &fsum {p(I)+s(I)} =: p(I') :- def_s(I), step(I,I').
 
-            &sum {400000} =: rdpos.
-            &sum {90000} =: rdlimit.    %  <<< ADDED <<<
+            &fsum {400000} =: rdpos.
+            &fsum {90000} =: rdlimit.    %  <<< ADDED <<<
 
-            fine(I') :- &sum{ p(I) } < rdpos, &sum{ p(I') } >= rdpos, step(I,I'),
-                        &sum{ s(I') } > rdlimit.
+            fine(I') :- &fsum{ p(I) } < rdpos, &fsum{ p(I') } >= rdpos, step(I,I'),
+                        &fsum{ s(I') } > rdlimit.
 
-            &sum {0} =: p(0).
-            &sum {80000} =: s(0).
+            &fsum {0} =: p(0).
+            &fsum {80000} =: s(0).
 
             acc(11350,4).
             slow(2301,6).
