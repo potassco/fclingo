@@ -24,6 +24,9 @@ deduction(mary, 10000, 10001).
 min_taxes(P) :- &fmin{ tax(P') : person(P') } = tax(P), person(P).
 max_taxes(P) :- &fmax{ tax(P') : person(P') } = tax(P), person(P).
 
+&sum{x}=0.
+a :- &sum{x}=0.
+
 #show lives/2.
 #show min_taxes/1.
 #show max_taxes/1.

@@ -10,9 +10,10 @@ from clingo.ast import ProgramBuilder, parse_files
 
 from fclingo import THEORY
 from fclingo.parsing import HeadBodyTransformer
+from fclingo.translator import Translator
 
-_FALSE = ["0", "no", "false"]
-_TRUE = ["1", "yes", "true"]
+MAX_INT = 1073741823
+MIN_INT = -1073741823
 
 
 class AppConfig(object):
@@ -21,9 +22,10 @@ class AppConfig(object):
     """
 
     def __init__(self):
-        self.shift_constraints = clingo.Flag(True)
         self.print_aux = clingo.Flag(False)
         self.print_trans = clingo.Flag(False)
+        self.min_int = MIN_INT
+        self.max_int = MAX_INT
 
 
 class FclingoApp(clingo.Application):
@@ -102,26 +104,10 @@ class FclingoApp(clingo.Application):
 
         prg.add("base", [], THEORY)
         prg.ground([("base", [])])
-        print_conf(prg.configuration, "")
-        # translator = Translator(prg, self.config, self._propagator.config)
-        # translator.translate(self._propagator)
+        translator = Translator(prg, self.config)
+        translator.translate()
 
         prg.solve(on_model=self.on_model, on_statistics=self._theory.on_statistics)
-
-
-def print_conf(conf, ident):
-    for key in conf.keys:
-        subconf = getattr(conf, key)
-        if isinstance(subconf, clingo.Configuration):
-            label = key
-            if subconf.is_array:
-                label += "[0.." + str(len(subconf)) + "]"
-            print("{0}{1} - {2}".format(ident, label, conf.description(key)))
-            print_conf(subconf, "  " + ident + label + ".")
-        else:
-            print(
-                "{0}{1}[={2}] - {3}".format(ident, key, subconf, conf.description(key))
-            )
 
 
 if __name__ == "__main__":

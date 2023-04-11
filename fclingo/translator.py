@@ -1,6 +1,7 @@
 import clingo
 
 from fclingo.astutil import match
+from fclingo.parsing import BODY, HEAD, PREFIX
 
 AUX = "__aux"
 DEF = "__def"
@@ -134,12 +135,14 @@ class ConstraintTerm(object):
         return ConstraintTerm(name, None, arguments, term_type)
 
 
-HEAD = ConstraintTerm("head", None, [], clingo.TheoryTermType.Symbol)
-BODY = ConstraintTerm("body", None, [], clingo.TheoryTermType.Symbol)
 ONE = ConstraintTerm(None, 1, None, clingo.TheoryTermType.Number)
 ZERO = ConstraintTerm(None, 0, None, clingo.TheoryTermType.Number)
-SUM_TERM_HEAD = ConstraintTerm("sum", None, [HEAD], clingo.TheoryTermType.Function)
-SUM_TERM_BODY = ConstraintTerm("sum", None, [BODY], clingo.TheoryTermType.Function)
+SUM_TERM_HEAD = ConstraintTerm(
+    PREFIX + "fsum" + HEAD, None, [], clingo.TheoryTermType.Function
+)
+SUM_TERM_BODY = ConstraintTerm(
+    PREFIX + "fsum" + BODY, None, [], clingo.TheoryTermType.Function
+)
 
 
 class Translator(object):
@@ -147,10 +150,9 @@ class Translator(object):
     Class that translates ASP program with constraint atoms including assignments and conditionals into a Clingcon program.
     """
 
-    def __init__(self, prg, appconfig, propconfig):
+    def __init__(self, prg, appconfig):
         self._prg = prg
         self._appconfig = appconfig
-        self._propconfig = propconfig
         self._defined = {}
         self._auxvars = 0
         self._sum_constraints = set()
@@ -304,11 +306,11 @@ class Translator(object):
             neutral = ZERO
         elif match(atom.term, "min", 1):
             neutral = ConstraintTerm(
-                None, self._propconfig.max_int, None, clingo.TheoryTermType.Number
+                None, self._appconfig.max_int, None, clingo.TheoryTermType.Number
             )
         elif match(atom.term, "max", 1):
             neutral = ConstraintTerm(
-                None, self._propconfig.min_int, None, clingo.TheoryTermType.Number
+                None, self._appconfig.min_int, None, clingo.TheoryTermType.Number
             )
         for element in atom.elements:
             if element.condition_id:
@@ -506,6 +508,35 @@ class Translator(object):
         self._add_rule([alpha_lit], [atom.literal])
         self._add_rule([beta_lit], [atom.literal])
 
+    def _term_id(self, term):
+        with self._prg.backend() as backend:
+            if term.type == clingo.TheoryTermType.Function:
+                arguments = [self._term_id(arg) for arg in term.arguments]
+                return backend.add_theory_term_function(term.name, arguments)
+            elif term.type == clingo.TheoryTermType.Number:
+                return backend.add_theory_term_number(term.number)
+            elif term.type == clingo.TheoryTermType.Symbol:
+                return backend.add_theory_term_symbol(clingo.Function(term.name))
+
+    def _add_clingcon_constraint(self, atom):
+        with self._prg.backend() as backend:
+            lit = backend.add_atom()
+            name = self._term_id(
+                ConstraintTerm(
+                    PREFIX + "sum" + BODY
+                    if BODY in atom.term.name
+                    else PREFIX + "sum" + HEAD,
+                    0,
+                    [],
+                    clingo.TheoryTermType.Function,
+                )
+            )
+            elements = [self._term_id(elem.terms[0]) for elem in atom.elements]
+            guard = atom.guard[0]
+            rhs = self._term_id(atom.guard[1])
+            backend.add_theory_atom_with_guard(lit, name, elements, guard, rhs)
+        return lit
+
     def _add_sum_constraint(self, atom):
         if not isinstance(atom, ConstraintAtom):
             sum_con = ConstraintAtom.copy(atom)
@@ -522,6 +553,7 @@ class Translator(object):
             print("% Adding sum constraint:", atom)
             print()
         self._sum_constraints.add(sum_con)
+        clingcon_lit = self._add_clingcon_constraint(atom)
         defined = []
         for element in sum_con.elements:
             for var in self.vars(element.terms[0]):
@@ -532,14 +564,12 @@ class Translator(object):
             def_lit = self._add_defined(var)
             self._add_rule([], [sum_con.literal, -def_lit])
             defined.append(def_lit)
-        if match(sum_con.term.arguments[0], "head", 0):
+        if HEAD in sum_con.term.name:
             self._define_variables(sum_con)
-        elif match(sum_con.term.arguments[0], "body", 0):
-            new_lit = self._add_atom()
-            self._add_rule([new_lit], [], True)
-            defined.append(new_lit)
+            self._add_rule([clingcon_lit], sum_con.literal)
+        elif BODY in sum_con.term.name:
+            defined.append(clingcon_lit)
             self._add_rule([sum_con.literal], defined)
-            sum_con.literal = new_lit
         return sum_con.literal
 
     def _translate_constraint(self, atom):
@@ -549,10 +579,17 @@ class Translator(object):
             or match(atom.term, "dom", 0)
             or match(atom.term, "minimize", 0)
             or match(atom.term, "maximize", 0)
+            or (
+                match(atom.term, PREFIX + "sum" + BODY, 0)
+                or match(atom.term, PREFIX + "sum" + HEAD, 0)
+            )
         ):
             return
         if (
-            match(atom.term, "sum", 1)
+            (
+                match(atom.term, PREFIX + "fsum" + BODY, 0)
+                or match(atom.term, PREFIX + "fsum" + HEAD, 0)
+            )
             and not self.conditional(atom)
             and atom.guard[0] in ("=", "<", ">", "<=", ">=", "!=")
         ):
@@ -561,11 +598,15 @@ class Translator(object):
             self._translate_conditional(atom)
         elif atom.guard[0] == "=:":
             self._translate_assignment(atom)
-        elif match(atom.term, "max", 1):
+        elif match(atom.term, PREFIX + "max" + BODY, 0) or match(
+            atom.term, PREFIX + "max" + HEAD, 0
+        ):
             self._translate_max(atom)
-        elif match(atom.term, "min", 1):
+        elif match(atom.term, PREFIX + "min" + BODY, 0) or match(
+            atom.term, PREFIX + "min" + BODY, 0
+        ):
             self._translate_min(atom)
-        elif match(atom.term, "in", 1):
+        elif match(atom.term, PREFIX + "in" + HEAD, 0):
             self._translate_in(atom)
         else:
             self._aux_constraints.add(ConstraintAtom.copy(atom))
@@ -574,7 +615,7 @@ class Translator(object):
         for atom in self._prg.theory_atoms:
             self._translate_constraint(atom)
 
-    def translate(self, propagator):
+    def translate(self):
         """
         Translates ASP program with constraint atoms including assignments and conditionals into a Clingcon program.
         Adds rules implementing definition of variables, assignments, conditional linear constraint atoms and aggregates max and min.
@@ -583,4 +624,3 @@ class Translator(object):
         self._translate_constraints()
         self._fix_undefined()
         self._prg.cleanup()
-        propagator.constraints = self._sum_constraints.union(self._aux_constraints)

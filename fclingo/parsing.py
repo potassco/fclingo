@@ -7,7 +7,11 @@ from functools import reduce  # pylint: disable=redefined-builtin
 import clingo
 from clingo import ast
 
-THEORY = """\
+PREFIX = "__"
+HEAD = "_h"
+BODY = "_b"
+THEORY = (
+    """\
 #theory htc {
     sum_term {
     -  : 3, unary;
@@ -28,12 +32,44 @@ THEORY = """\
     -  : 1, binary, left;
     .. : 0, binary, left
     };
-    &fsum/1 : sum_term, {<=,=,!=,<,>,>=,=:}, sum_term, any;
-    &fmax/1 : sum_term, {<=,=,!=,<,>,>=,=:}, sum_term, any;
-    &fmin/1 : sum_term, {<=,=,!=,<,>,>=,=:}, sum_term, any;
-    &fin/1 : dom_term, {=:}, sum_term, head
+    &"""
+    + PREFIX
+    + """fsum"""
+    + BODY
+    + """/0 : sum_term, {<=,=,!=,<,>,>=,=:}, sum_term, body;
+    &"""
+    + PREFIX
+    + """fsum"""
+    + HEAD
+    + """/0 : sum_term, {<=,=,!=,<,>,>=,=:}, sum_term, head;
+    &"""
+    + PREFIX
+    + """fmax"""
+    + BODY
+    + """/0 : sum_term, {<=,=,!=,<,>,>=,=:}, sum_term, body;
+    &"""
+    + PREFIX
+    + """fmax"""
+    + HEAD
+    + """/0 : sum_term, {<=,=,!=,<,>,>=,=:}, sum_term, head;
+    &"""
+    + PREFIX
+    + """fmin"""
+    + BODY
+    + """/0 : sum_term, {<=,=,!=,<,>,>=,=:}, sum_term, body;
+    &"""
+    + PREFIX
+    + """fmin"""
+    + HEAD
+    + """/0 : sum_term, {<=,=,!=,<,>,>=,=:}, sum_term, head;
+    &"""
+    + PREFIX
+    + """fin"""
+    + HEAD
+    + """/0 : dom_term, {=:}, sum_term, head
 }.
 """
+)
 
 
 class HeadBodyTransformer(ast.Transformer):
@@ -43,12 +79,12 @@ class HeadBodyTransformer(ast.Transformer):
     def visit_TheoryAtom(self, atom, in_lit=False):
         term = atom.term
         if term.name in ["fsum", "fin", "fmax", "fmin"] and not term.arguments:
-            loc = "body" if in_lit else "head"
+            loc = BODY if in_lit else HEAD
             atom = atom.update(
                 term=ast.Function(
                     term.location,
-                    term.name,
-                    [ast.Function(term.location, loc, [], False)],
+                    PREFIX + term.name + loc,
+                    [],
                     False,
                 )
             )
