@@ -1,4 +1,5 @@
 import clingo
+from clingo.symbol import parse_term
 
 from fclingo.astutil import match
 from fclingo.parsing import BODY, HEAD, PREFIX
@@ -138,10 +139,10 @@ class ConstraintTerm(object):
 ONE = ConstraintTerm(None, 1, None, clingo.TheoryTermType.Number)
 ZERO = ConstraintTerm(None, 0, None, clingo.TheoryTermType.Number)
 SUM_TERM_HEAD = ConstraintTerm(
-    PREFIX + "fsum" + HEAD, None, [], clingo.TheoryTermType.Function
+    PREFIX + "sum" + HEAD, None, [], clingo.TheoryTermType.Function
 )
 SUM_TERM_BODY = ConstraintTerm(
-    PREFIX + "fsum" + BODY, None, [], clingo.TheoryTermType.Function
+    PREFIX + "sum" + BODY, None, [], clingo.TheoryTermType.Function
 )
 
 
@@ -260,10 +261,9 @@ class Translator(object):
 
     def _define_variables(self, atom):
         assert (
-            match(atom.term.arguments[0], "head", 0)
-            and match(atom.term, "sum", 1)
-            and not self.conditional(atom)
-        )
+            match(atom.term, PREFIX + "fsum" + HEAD, 0)
+            or match(atom.term, PREFIX + "sum" + HEAD, 0)
+        ) and not self.conditional(atom)
         for var in self.vars(atom.guard[1]):
             self._add_defined(var, [atom.literal])
         for element in atom.elements:
@@ -275,12 +275,11 @@ class Translator(object):
 
     def _fix_undefined(self):
         for var, lit in self._defined.items():
-            fix_val = self._add_atom()
-            self._sum_constraints.add(
+            fix_val = self._add_clingcon_constraint(
                 ConstraintAtom(
                     [ConstraintElement([var], None, None)],
                     ["=", ZERO],
-                    fix_val,
+                    0,
                     SUM_TERM_HEAD,
                 )
             )
@@ -325,14 +324,17 @@ class Translator(object):
                 ]
                 aux_var_elem = ConstraintElement([aux_var], None, None)
                 holds_term = element.terms[0]
-                holds = self._add_sum_constraint(
+                holds = self._add_clingcon_constraint(
                     ConstraintAtom(
                         [aux_var_elem], ["=", holds_term], None, SUM_TERM_HEAD
-                    )
+                    ),
+                    True,
                 )
-                nholds = self._add_sum_constraint(
-                    ConstraintAtom([aux_var_elem], ["=", neutral], None, SUM_TERM_HEAD)
+                nholds = self._add_clingcon_constraint(
+                    ConstraintAtom([aux_var_elem], ["=", neutral], None, SUM_TERM_HEAD),
+                    True,
                 )
+
                 body = [cond]
                 body.extend(holds_def)
                 self._add_rule([holds], body)
@@ -355,7 +357,7 @@ class Translator(object):
         type_term = ConstraintTerm(
             atom.term.name,
             None,
-            [atom.term.arguments[0]],
+            [],
             clingo.TheoryTermType.Function,
         )
         self._add_rule([cond_free_lit], [atom.literal])
@@ -377,7 +379,7 @@ class Translator(object):
         type_term = ConstraintTerm(
             atom.term.name,
             None,
-            [atom.term.arguments[0]],
+            [],
             clingo.TheoryTermType.Function,
         )
         head_lit = self._add_atom()
@@ -440,8 +442,7 @@ class Translator(object):
                 self._add_defined(min_var, body)
             body.append(min_def)
 
-            check_lit = self._add_atom()
-            self._add_sum_constraint(
+            check_lit = self._add_clingcon_constraint(
                 ConstraintAtom(
                     [ConstraintElement([min_var], None, None)],
                     ["<=", element.terms[0]],
@@ -451,8 +452,7 @@ class Translator(object):
             )
             self._add_rule([], [-check_lit])
 
-            check_lit = self._add_atom()
-            self._add_sum_constraint(
+            check_lit = self._add_clingcon_constraint(
                 ConstraintAtom(
                     [ConstraintElement([min_var], None, None)],
                     ["=", element.terms[0]],
@@ -466,15 +466,15 @@ class Translator(object):
         type_term = ConstraintTerm(
             "sum", None, [atom.term.arguments[0]], clingo.TheoryTermType.Function
         )
-        eq_lit = self._add_sum_constraint(
+        eq_lit = self._add_clingcon_constraint(
             ConstraintAtom(
                 [ConstraintElement([min_var], None, None)], atom.guard, None, type_term
             )
         )
-        if match(atom.term.arguments[0], "head", 0):
+        if HEAD in atom.term.name:
             self._add_rule([eq_lit], [atom.literal])
             self._add_rule([atom.literal], [eq_lit])
-        elif match(atom.term.arguments[0], "body", 0):
+        elif BODY in atom.term.name:
             self._add_rule([atom.literal], [eq_lit, min_def])
 
     def _translate_in(self, atom):
@@ -489,52 +489,60 @@ class Translator(object):
             print()
         alpha_term = atom.elements[0].terms[0].arguments[0]
         beta_term = atom.elements[0].terms[0].arguments[1]
-        alpha_lit = self._add_sum_constraint(
+        alpha_lit = self._add_clingcon_constraint(
             ConstraintAtom(
                 [ConstraintElement([alpha_term], None, None)],
                 ["<=", atom.guard[1]],
                 None,
                 SUM_TERM_HEAD,
-            )
+            ),
+            True,
         )
-        beta_lit = self._add_sum_constraint(
+        beta_lit = self._add_clingcon_constraint(
             ConstraintAtom(
                 [ConstraintElement([beta_term], None, None)],
                 [">=", atom.guard[1]],
                 None,
                 SUM_TERM_HEAD,
-            )
+            ),
+            True,
         )
         self._add_rule([alpha_lit], [atom.literal])
         self._add_rule([beta_lit], [atom.literal])
 
-    def _term_id(self, term):
-        with self._prg.backend() as backend:
-            if term.type == clingo.TheoryTermType.Function:
-                arguments = [self._term_id(arg) for arg in term.arguments]
-                return backend.add_theory_term_function(term.name, arguments)
-            elif term.type == clingo.TheoryTermType.Number:
-                return backend.add_theory_term_number(term.number)
-            elif term.type == clingo.TheoryTermType.Symbol:
-                return backend.add_theory_term_symbol(clingo.Function(term.name))
+    def _term_id(self, term, backend):
+        if term.type == clingo.TheoryTermType.Function:
+            arguments = [self._term_id(arg, backend) for arg in term.arguments]
+            return backend.add_theory_term_function(term.name, arguments)
+        elif term.type == clingo.TheoryTermType.Number:
+            return backend.add_theory_term_number(term.number)
+        else:
+            assert term.type == clingo.TheoryTermType.Symbol
+            return backend.add_theory_term_symbol(parse_term(term.name))
 
-    def _add_clingcon_constraint(self, atom):
+    def _add_clingcon_constraint(self, atom, define=False):
+        for con in self._sum_constraints:
+            if str(con) == str(atom):
+                return con.literal
         with self._prg.backend() as backend:
+            if self._appconfig.print_trans:
+                print()
+                print("% Adding sum constraint:", atom)
+                print()
+            self._sum_constraints.add(atom)
             lit = backend.add_atom()
-            name = self._term_id(
-                ConstraintTerm(
-                    PREFIX + "sum" + BODY
-                    if BODY in atom.term.name
-                    else PREFIX + "sum" + HEAD,
-                    0,
-                    [],
-                    clingo.TheoryTermType.Function,
-                )
-            )
-            elements = [self._term_id(elem.terms[0]) for elem in atom.elements]
+            if atom.literal == None or atom.literal == 0:
+                atom.literal = lit
+            name = self._term_id(atom.term, backend)
+            elements = [
+                backend.add_theory_element([self._term_id(elem.terms[0], backend)], [])
+                for elem in atom.elements
+            ]
             guard = atom.guard[0]
-            rhs = self._term_id(atom.guard[1])
+            rhs = self._term_id(atom.guard[1], backend)
             backend.add_theory_atom_with_guard(lit, name, elements, guard, rhs)
+        if define:
+            self._define_variables(atom)
         return lit
 
     def _add_sum_constraint(self, atom):
@@ -550,10 +558,14 @@ class Translator(object):
             sum_con.literal = new_lit
         if self._appconfig.print_trans:
             print()
-            print("% Adding sum constraint:", atom)
+            print("% Adding fsum constraint:", atom)
             print()
         self._sum_constraints.add(sum_con)
-        clingcon_lit = self._add_clingcon_constraint(atom)
+        clingcon_constraint = ConstraintAtom.copy(sum_con)
+        clingcon_constraint.term.name = (
+            PREFIX + "sum" + BODY if BODY in atom.term.name else PREFIX + "sum" + HEAD
+        )
+        clingcon_lit = self._add_clingcon_constraint(clingcon_constraint)
         defined = []
         for element in sum_con.elements:
             for var in self.vars(element.terms[0]):
@@ -565,8 +577,8 @@ class Translator(object):
             self._add_rule([], [sum_con.literal, -def_lit])
             defined.append(def_lit)
         if HEAD in sum_con.term.name:
+            self._add_rule([clingcon_lit], [sum_con.literal])
             self._define_variables(sum_con)
-            self._add_rule([clingcon_lit], sum_con.literal)
         elif BODY in sum_con.term.name:
             defined.append(clingcon_lit)
             self._add_rule([sum_con.literal], defined)
@@ -598,15 +610,15 @@ class Translator(object):
             self._translate_conditional(atom)
         elif atom.guard[0] == "=:":
             self._translate_assignment(atom)
-        elif match(atom.term, PREFIX + "max" + BODY, 0) or match(
-            atom.term, PREFIX + "max" + HEAD, 0
+        elif match(atom.term, PREFIX + "fmax" + BODY, 0) or match(
+            atom.term, PREFIX + "fmax" + HEAD, 0
         ):
             self._translate_max(atom)
-        elif match(atom.term, PREFIX + "min" + BODY, 0) or match(
-            atom.term, PREFIX + "min" + BODY, 0
+        elif match(atom.term, PREFIX + "fmin" + BODY, 0) or match(
+            atom.term, PREFIX + "fmin" + BODY, 0
         ):
             self._translate_min(atom)
-        elif match(atom.term, PREFIX + "in" + HEAD, 0):
+        elif match(atom.term, PREFIX + "fin" + HEAD, 0):
             self._translate_in(atom)
         else:
             self._aux_constraints.add(ConstraintAtom.copy(atom))

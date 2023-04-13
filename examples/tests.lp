@@ -31,24 +31,30 @@ max_taxes(P) :- &max{ tax(P') : person(P') } = tax(P), person(P).
 #show max_taxes/1.
 
 % Standard GZ unsat (theory atom bug)
-&sum{x}=1 :- &sum{ 1 : a }>= 0.
-a :- &sum{x}=1.
+&fsum{x}=1 :- &fsum{ 1 : a }>= 0.
+a :- &fsum{x}=1.
+
 
 % TODO: Weird conditional minimum body example (1 or no stable models?)
-&sum{x} = 1.
-a :- &min{3; x:a} > 2.
+&fsum{x} = 1.
+a :- &fmin{3; x:a} > 2.
+
 
 #show a/0.
 
-% Assignment fact
-&sum{1} =: x.
-&sum{z} =: y.
 
+% Assignment fact
+&fsum{1} =: x.
+&fsum{z} =: y.
+
+*%
 % Conditional assignment fact
 {a}.
-&sum{z : a; 1} =: x.
-&sum{x} =: y.
-
+&fsum{z : a; 1} =: x.
+&fsum{x} =: y.
+:- not a.
+%*
+#show __def/1.
 % Assignment head, body check
 {a}.
 &sum{1} =: x :- a.
@@ -119,4 +125,3 @@ a :- &max{1; x:b} <= 1.
 
 
 *%
-&fsum{x+2;z}=y.
