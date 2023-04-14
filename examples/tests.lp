@@ -1,4 +1,4 @@
-%*
+
 % Application taxes
 person(paul;mary).
 region(luxemburg;germany).
@@ -14,22 +14,23 @@ deduction(mary, 10000, 10001).
 
 1 { lives(P,R) : region(R) } 1 :- person(P).
 
-&sum{ 0 } =: deduction(P) :- person(P), not deduction(P,_,_).
-&in{ L..H } =: deduction(P) :- deduction(P,L,H).
-&sum{ T } =: rate(P) :- lives(P,R), income(P,I),
+&fsum{ 0 } =: deduction(P) :- person(P), not deduction(P,_,_).
+&fin{ L..H } =: deduction(P) :- deduction(P,L,H).
+&fsum{ T } =: rate(P) :- lives(P,R), income(P,I),
                         T = #max{ T' : rate(R,L,T'), I>=L}.
 
-&sum{ I*rate(P)-100*deduction(P) } =: 100*tax(P) :- income(P,I).
-&sum{ tax(P) : lives(P,R) } =: total(R) :- region(R).
-&min{ tax(P) : person(P) } =: min.
-&max{ tax(P) : person(P) } =: max.
-min_taxes(P) :- &min{ tax(P') : person(P') } = tax(P), person(P).
-max_taxes(P) :- &max{ tax(P') : person(P') } = tax(P), person(P).
+&fsum{ I*rate(P)-100*deduction(P) } =: 100*tax(P) :- income(P,I).
+&fsum{ tax(P) : lives(P,R) } =: total(R) :- region(R).
+&fmin{ tax(P) : person(P) } =: fmin.
+&fmax{ tax(P) : person(P) } =: fmax.
+min_taxes(P) :- &fmin{ tax(P') : person(P') } = tax(P), person(P).
+max_taxes(P) :- &fmax{ tax(P') : person(P') } = tax(P), person(P).
 
 #show lives/2.
 #show min_taxes/1.
 #show max_taxes/1.
-
+&show{tax/1;deduction/1;rate/1}.
+%*
 % Standard GZ unsat (theory atom bug)
 &fsum{x}=1 :- &fsum{ 1 : a }>= 0.
 a :- &fsum{x}=1.
@@ -49,12 +50,10 @@ a :- &fmin{3; x:a} > 2.
 
 % Conditional assignment fact
 
-*%
 {a}.
 &fsum{z : a; 1} =: x.
 &fsum{x} =: y.
 
-%*
 #show __def/1.
 
 % Assignment head, body check
@@ -63,67 +62,67 @@ a :- &fmin{3; x:a} > 2.
 b :- &fsum{x} > 0.
 
 % In assignment
-&in{0..2} =: x.
+&fin{0..2} =: x.
 
 % In assignment, vars undef
-&in{y..z} =: x.
+&fin{y..z} =: x.
 
 % In assignment, vars def, unsat
-&sum{z} = 1.
-&sum{y} = 2.
-&in{y..z} =: x.
+
+&fsum{z} = 1.
+&fsum{y} = 2.
+&fin{y..z} =: x.
 
 % In assignment, vars def, sat
-&sum{z} = 2.
-&sum{y} = 1.
-&in{y..z} =: x.
+&fsum{z} = 2.
+&fsum{y} = 1.
+&fin{y..z} =: x.
 
 % In assignment, vars def conditional, sat
 {a}.
-&sum{z} = 2 :- a.
-&sum{y} = 1.
-&in{y..z} =: x.
+&fsum{z} = 2 :- a.
+&fsum{y} = 1.
+&fin{y..z} =: x.
 
 % Conditional linear constraint, head
 {a}.
-&sum{1:a} = x.
+&fsum{1:a} = x.
 
 % Conditional linear constraint, body
 {a}.
-&sum{1} = x.
-b :- &sum{1:a} < x.
+&fsum{1} = x.
+b :- &fsum{1:a} < x.
 
 % Minimum assignment fact
-&min{3;2;1}=:x.
+&fmin{3;2;1}=:x.
 
 % Minimum body
-&sum{x} = 1.
-a :- &min{3;x} < 2.
+&fsum{x} = 1.
+a :- &fmin{3;x} < 2.
 
 % Conditional minimum assignment fact
 {a}.
-&min{3;2;1:a}=:x.
+&fmin{3;2;1:a}=:x.
 
 % Conditional minimum body
 {b}.
-&sum{x} = 1.
-a :- &min{3; x:b} < 2.
+&fsum{x} = 1.
+a :- &fmin{3; x:b} < 2.
 
 % Maximum assignment fact
-&max{3;2;1}=:x.
+&fmax{3;2;1}=:x.
 
 % Maximum body
-&sum{x} = 3.
-a :- &max{1;x} > 2.
+&fsum{x} = 3.
+a :- &fmax{1;x} > 2.
 
 % Conditional maximum assignment fact
 {a}.
-&max{3;2;4:a}=:x.
+&fmax{3;2;4:a}=:x.
 
 % Conditional maximum body
 {b}.
-&sum{x} = 2.
-a :- &max{1; x:b} <= 1.
-
+&fsum{x} = 2.
+a :- &fmax{1; x:b} <= 1.
 
 *%
