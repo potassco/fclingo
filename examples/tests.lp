@@ -47,18 +47,20 @@ a :- &fmin{3; x:a} > 2.
 &fsum{1} =: x.
 &fsum{z} =: y.
 
-*%
 % Conditional assignment fact
+
+*%
 {a}.
 &fsum{z : a; 1} =: x.
 &fsum{x} =: y.
-:- not a.
+
 %*
 #show __def/1.
+
 % Assignment head, body check
 {a}.
-&sum{1} =: x :- a.
-b :- &sum{x} > 0.
+&fsum{1} =: x :- a.
+b :- &fsum{x} > 0.
 
 % In assignment
 &in{0..2} =: x.
