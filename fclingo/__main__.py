@@ -10,10 +10,11 @@ from clingo.ast import ProgramBuilder, parse_files
 
 from fclingo import THEORY
 from fclingo.parsing import HeadBodyTransformer
-from fclingo.translator import Translator
+from fclingo.translator import AUX, DEF, Translator
 
 MAX_INT = 1073741823
 MIN_INT = -1073741823
+CSP = "__csp"
 
 
 class AppConfig(object):
@@ -39,12 +40,53 @@ class FclingoApp(clingo.Application):
         self.version = "0.1"
         self.config = AppConfig()
         self._theory = ClingconTheory()
+        self._answer = 0
 
     def on_model(self, model):
         """
         Report models to the propagator.
         """
         self._theory.on_model(model)
+
+    def print_model(self, model, printer):
+        shown = [
+            str(atom)
+            for atom in model.symbols(shown=True)
+            if not (atom.name == DEF and len(atom.arguments) == 1)
+        ]
+        valuation = [
+            "val("
+            + str(assignment.arguments[0])
+            + ","
+            + str(assignment.arguments[1])
+            + ")"
+            for assignment in model.symbols(theory=True)
+            if assignment.name == CSP
+            and len(assignment.arguments) == 2
+            and model.contains(clingo.Function(DEF, [assignment.arguments[0]]))
+            and not assignment.arguments[0].name == AUX
+        ]
+        shown.extend(valuation)
+        print(" ".join(shown))
+        if self.config.print_aux:
+            defs = [
+                str(atom)
+                for atom in model.symbols(shown=True)
+                if atom.name == DEF and len(atom.arguments) == 1
+            ]
+            auxvars = [
+                "val("
+                + str(assignment.arguments[0])
+                + ","
+                + str(assignment.arguments[1])
+                + ")"
+                for assignment in model.symbols(theory=True)
+                if assignment.name == CSP
+                and len(assignment.arguments) == 2
+                and assignment.arguments[0].name == AUX
+            ]
+            defs.extend(auxvars)
+            print(" ".join(defs))
 
     def _flag_str(self, flag):
         return "yes" if flag else "no"
@@ -111,4 +153,5 @@ class FclingoApp(clingo.Application):
 
 
 if __name__ == "__main__":
-    sys.exit(int(clingo.clingo_main(FclingoApp(), sys.argv[1:])))
+    arguments = sys.argv[1:]
+    sys.exit(int(clingo.clingo_main(FclingoApp(), arguments)))
