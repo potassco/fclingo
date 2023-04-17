@@ -4,7 +4,7 @@ Test cases for HTc to Clingcon translation
 
 import unittest
 
-from tests import solve_htc
+from tests import solve
 
 # pylint: disable=missing-docstring, line-too-long
 
@@ -22,7 +22,7 @@ SOL_TAXES = [
         ("rate(paul)", 25),
         ("tax(mary)", 32000),
         ("tax(paul)", 15000),
-        ("total(germany)", 32000),
+        ("total(germany)", 47000),
         ("total(luxemburg)", 0),
     ],
     [
@@ -38,7 +38,7 @@ SOL_TAXES = [
         ("rate(paul)", 25),
         ("tax(mary)", 31999),
         ("tax(paul)", 15000),
-        ("total(germany)", 31999),
+        ("total(germany)", 46999),
         ("total(luxemburg)", 0),
     ],
     [
@@ -54,7 +54,7 @@ SOL_TAXES = [
         ("rate(paul)", 23),
         ("tax(mary)", 32000),
         ("tax(paul)", 13800),
-        ("total(germany)", 45800),
+        ("total(germany)", 32000),
         ("total(luxemburg)", 13800),
     ],
     [
@@ -70,7 +70,7 @@ SOL_TAXES = [
         ("rate(paul)", 23),
         ("tax(mary)", 31999),
         ("tax(paul)", 13800),
-        ("total(germany)", 45799),
+        ("total(germany)", 31999),
         ("total(luxemburg)", 13800),
     ],
     [
@@ -86,7 +86,7 @@ SOL_TAXES = [
         ("rate(paul)", 25),
         ("tax(mary)", 26000),
         ("tax(paul)", 15000),
-        ("total(germany)", 0),
+        ("total(germany)", 15000),
         ("total(luxemburg)", 26000),
     ],
     [
@@ -102,7 +102,7 @@ SOL_TAXES = [
         ("rate(paul)", 25),
         ("tax(mary)", 25999),
         ("tax(paul)", 15000),
-        ("total(germany)", 0),
+        ("total(germany)", 15000),
         ("total(luxemburg)", 25999),
     ],
     [
@@ -118,7 +118,7 @@ SOL_TAXES = [
         ("rate(paul)", 23),
         ("tax(mary)", 26000),
         ("tax(paul)", 13800),
-        ("total(germany)", 13800),
+        ("total(germany)", 0),
         ("total(luxemburg)", 39800),
     ],
     [
@@ -134,7 +134,7 @@ SOL_TAXES = [
         ("rate(paul)", 23),
         ("tax(mary)", 25999),
         ("tax(paul)", 13800),
-        ("total(germany)", 13800),
+        ("total(germany)", 0),
         ("total(luxemburg)", 39799),
     ],
 ]
@@ -197,7 +197,7 @@ SOL_CAR = [
 class TestMain(unittest.TestCase):
     def test_conditionals(self):
         self.assertEqual(
-            solve_htc(
+            solve(
                 """\
             {a}.
             &fsum{1:a} = x.
@@ -208,7 +208,7 @@ class TestMain(unittest.TestCase):
             [[("x", 0)], ["a", ("x", 1)]],
         )
         self.assertEqual(
-            solve_htc(
+            solve(
                 """\
             {a}.
             &fsum{1} = x.
@@ -220,7 +220,7 @@ class TestMain(unittest.TestCase):
             [["a", ("x", 1)], ["b", ("x", 1)]],
         )
         self.assertEqual(
-            solve_htc(
+            solve(
                 """\
             &fsum{x}=1 :- &fsum{ 1 : a }>= 0.
             a :- &fsum{x}=1.
@@ -233,7 +233,7 @@ class TestMain(unittest.TestCase):
 
     def test_assignments(self):
         self.assertEqual(
-            solve_htc(
+            solve(
                 """\
             &fsum{1} =: x.
             &fsum{z} =: y.
@@ -244,7 +244,7 @@ class TestMain(unittest.TestCase):
             [[("x", 1), ("y", 0), ("z", 0)]],
         )
         self.assertEqual(
-            solve_htc(
+            solve(
                 """\
             {a}.
             &fsum{z : a; 1} =: x.
@@ -256,7 +256,7 @@ class TestMain(unittest.TestCase):
             [[("x", 1), ("y", 1), ("z", 0)], ["a", ("x", 0), ("y", 0), ("z", 0)]],
         )
         self.assertEqual(
-            solve_htc(
+            solve(
                 """\
             {a}.
             &fsum{1} =: x :- a.
@@ -268,7 +268,7 @@ class TestMain(unittest.TestCase):
             [[("x", 0)], ["a", "b", ("x", 1)]],
         )
         self.assertEqual(
-            solve_htc(
+            solve(
                 """\
             &fin{0..2} =: x.
             """,
@@ -278,7 +278,7 @@ class TestMain(unittest.TestCase):
             [[("x", 0)], [("x", 1)], [("x", 2)]],
         )
         self.assertEqual(
-            solve_htc(
+            solve(
                 """\
             &fin{y..z} =: x.
             """,
@@ -288,7 +288,7 @@ class TestMain(unittest.TestCase):
             [[("x", 0), ("y", 0), ("z", 0)]],
         )
         self.assertEqual(
-            solve_htc(
+            solve(
                 """\
             &fsum{z} = 1.
             &fsum{y} = 2.
@@ -300,7 +300,7 @@ class TestMain(unittest.TestCase):
             [],
         )
         self.assertEqual(
-            solve_htc(
+            solve(
                 """\
             &fsum{z} = 2.
             &fsum{y} = 1.
@@ -315,7 +315,7 @@ class TestMain(unittest.TestCase):
             ],
         )
         self.assertEqual(
-            solve_htc(
+            solve(
                 """\
             {a}.
             &fsum{z} = 2 :- a.
@@ -334,7 +334,7 @@ class TestMain(unittest.TestCase):
 
     def test_min(self):
         self.assertEqual(
-            solve_htc(
+            solve(
                 """\
             &fmin{3;2;1}=:x.
             """,
@@ -344,7 +344,7 @@ class TestMain(unittest.TestCase):
             [[("x", 1)]],
         )
         self.assertEqual(
-            solve_htc(
+            solve(
                 """\
             &fsum{x} = 1.
             a :- &fmin{3;x} < 2.
@@ -355,7 +355,7 @@ class TestMain(unittest.TestCase):
             [["a", ("x", 1)]],
         )
         self.assertEqual(
-            solve_htc(
+            solve(
                 """\
             {a}.
             &fmin{3;2;1:a}=:x.
@@ -374,7 +374,7 @@ class TestMain(unittest.TestCase):
             ],
         )
         self.assertEqual(
-            solve_htc(
+            solve(
                 """\
             {b}.
             &fsum{x} = 1.
@@ -395,7 +395,7 @@ class TestMain(unittest.TestCase):
             ],
         )
         self.assertEqual(
-            solve_htc(
+            solve(
                 """\
             a :- &fmin{1:a} > 0.
             """,
@@ -407,7 +407,7 @@ class TestMain(unittest.TestCase):
 
     def test_max(self):
         self.assertEqual(
-            solve_htc(
+            solve(
                 """\
             &fmax{3;2;1}=:x.
             """,
@@ -417,7 +417,7 @@ class TestMain(unittest.TestCase):
             [[("x", 3)]],
         )
         self.assertEqual(
-            solve_htc(
+            solve(
                 """\
             &fsum{x} = 3.
             a :- &fmax{1;x} > 2.
@@ -428,7 +428,7 @@ class TestMain(unittest.TestCase):
             [["a", ("x", 3)]],
         )
         self.assertEqual(
-            solve_htc(
+            solve(
                 """\
             {a}.
             &fmax{3;2;4:a}=:x.
@@ -447,7 +447,7 @@ class TestMain(unittest.TestCase):
             ],
         )
         self.assertEqual(
-            solve_htc(
+            solve(
                 """\
             {b}.
             &fsum{x} = 2.
@@ -469,7 +469,7 @@ class TestMain(unittest.TestCase):
         )
 
     def test_taxes(self):
-        answers = solve_htc(
+        answers = solve(
             """\
             person(paul;mary).
             region(luxemburg;germany).
@@ -511,7 +511,7 @@ class TestMain(unittest.TestCase):
 
     def test_car(self):
         self.assertEqual(
-            solve_htc(
+            solve(
                 """\
             #const n = 8.
             time(0..n).        step(I,I+1) :- time(I), I < n.

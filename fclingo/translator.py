@@ -622,13 +622,16 @@ class Translator(object):
             or match(atom.term, "dom", 0)
             or match(atom.term, "minimize", 0)
             or match(atom.term, "maximize", 0)
-            or (
-                match(atom.term, PREFIX + "sum" + BODY, 0)
-                or match(atom.term, PREFIX + "sum" + HEAD, 0)
-            )
         ):
             return
-        if (
+        elif match(atom.term, PREFIX + "sum" + BODY, 0) or match(
+            atom.term, PREFIX + "sum" + HEAD, 0
+        ):
+            for element in atom.elements:
+                for var in self.vars(element.terms[0]):
+                    def_lit = self._add_defined(var)
+                    self._add_rule([def_lit], [])
+        elif (
             (
                 match(atom.term, PREFIX + "fsum" + BODY, 0)
                 or match(atom.term, PREFIX + "fsum" + HEAD, 0)

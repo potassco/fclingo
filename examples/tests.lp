@@ -1,4 +1,4 @@
-
+%*
 % Application taxes
 person(paul;mary).
 region(luxemburg;germany).
@@ -30,7 +30,7 @@ max_taxes(P) :- &fmax{ tax(P') : person(P') } = tax(P), person(P).
 #show min_taxes/1.
 #show max_taxes/1.
 &show{tax/1;deduction/1;rate/1}.
-%*
+
 % Standard GZ unsat (theory atom bug)
 &fsum{x}=1 :- &fsum{ 1 : a }>= 0.
 a :- &fsum{x}=1.
@@ -126,3 +126,7 @@ a :- &fmax{1;x} > 2.
 a :- &fmax{1; x:b} <= 1.
 
 *%
+            &sum {   1 *y + (-5)*x } <= 0.
+            &sum { (-1)*y +   5 *x } <= 0.
+            &sum { 15*x } <= 15.
+            &sum { 10*x } <= 7.

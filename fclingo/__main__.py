@@ -149,6 +149,7 @@ class FclingoApp(clingo.Application):
         translator = Translator(prg, self.config)
         translator.translate()
 
+        self._theory.prepare(prg)
         prg.solve(on_model=self.on_model, on_statistics=self._theory.on_statistics)
 
 
