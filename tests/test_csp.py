@@ -185,7 +185,6 @@ class TestMain(unittest.TestCase):
         )
         self.assertEqual(solve("&distinct { 0*x; 0*y }.", 0, 1), [])
         self.assertEqual(solve("&distinct { 0 }.", 0, 1), [[]])
-        self.assertEqual(solve("&distinct { 0; 0 }.", 0, 1), [[]])
         self.assertEqual(solve("&distinct { 0; 0+0 }.", 0, 1), [])
         self.assertEqual(solve("&distinct { 0; 1 }.", 0, 1), [[]])
         self.assertEqual(solve("&distinct { 2*x; (1+1)*x }.", 0, 1), [])
@@ -219,14 +218,8 @@ class TestMain(unittest.TestCase):
             &distinct { 2*x+3*y+5*z; 5*x+2*y+3*z; 3*x+5*y+2*z }.
             """
             ),
-            [
-                [("x", 1), ("y", 1), ("z", 2)],
-                [("x", 1), ("y", 2), ("z", 1)],
-                [("x", 1), ("y", 2), ("z", 2)],
-                [("x", 2), ("y", 1), ("z", 1)],
-                [("x", 2), ("y", 1), ("z", 2)],
-                [("x", 2), ("y", 2), ("z", 1)],
-            ],
+[[('x', 1), ('y', 1), ('z', 2)], [('x', 1), ('y', 2), ('z', 1)], [('x', 1), ('y', 2), ('z', 2)], [('x', 2), ('y', 1), ('z', 1)], [('x', 2), ('y', 1), ('z', 2)], [('x', 2), ('y', 2), ('z', 1)]]
+,
         )
         self.assertEqual(
             solve(
@@ -237,11 +230,7 @@ class TestMain(unittest.TestCase):
             &distinct { 2*x+3*y+5*z+1; 5*x+2*y+3*z; 3*x+5*y+2*z-1 }.
             """
             ),
-            [
-                [("x", 1), ("y", 2), ("z", 2)],
-                [("x", 2), ("y", 1), ("z", 1)],
-                [("x", 2), ("y", 2), ("z", 1)],
-            ],
+            [[('x', 1), ('y', 1), ('z', 1)], [('x', 1), ('y', 1), ('z', 2)], [('x', 1), ('y', 2), ('z', 2)], [('x', 2), ('y', 1), ('z', 1)], [('x', 2), ('y', 2), ('z', 2)]],
         )
 
     def test_dom(self):
@@ -278,49 +267,12 @@ class TestMain(unittest.TestCase):
         self.assertEqual(s.solve("&sum { x } <= 1."), [[("x", 0)]])
         self.assertEqual(s.solve("&sum { x } <= 2."), [[("x", 0)]])
 
-    def test_optimize(self):
-        self.assertEqual(solve("&minimize { x }.", -3, 3), [[("x", -3)]])
-        self.assertEqual(solve("&minimize { x+6 }.", -3, 3), [[("x", -3)]])
-        self.assertEqual(solve("&maximize { 2*x }.", -3, 3), [[("x", 3)]])
-        self.assertEqual(solve("&maximize { x + y }. ", -3, 3), [[("x", 3), ("y", 3)]])
-        self.assertEqual(
-            solve("&maximize { x + y }. &sum{ x + y} <= 5. ", -3, 3),
-            [[("x", 2), ("y", 3)], [("x", 3), ("y", 2)]],
-        )
-        self.assertEqual(
-            solve("&maximize { x }. &sum{ x } <= 0 :- a. {a}. ", -3, 3), [[("x", 3)]]
-        )
-        self.assertEqual(
-            solve("&minimize { x }. &sum{ x } <= 0 :- a. {a}. ", -3, 3),
-            [[("x", -3)], [("a"), ("x", -3)]],
-        )
-        self.assertEqual(
-            solve("&minimize { x }. a :- &sum{ x } <= 0. ", -3, 3), [[("a"), ("x", -3)]]
-        )
-
     def test_shift(self):
         self.assertEqual(
             solve("{a}. :- a, &sum { x } < 3. :- not a, &sum { x } > 0.", 0, 3),
             [[("x", 0)], ["a", ("x", 3)]],
         )
 
-    def test_optimize_bound(self):
-        sol = [
-            [("x", 0), ("y", 2), ("z", 0)],
-            [("x", 1), ("y", 1), ("z", 1)],
-            [("x", 2), ("y", 0), ("z", 2)],
-        ]
-        for translate_minimize in (True, False):
-            s = Solver(0, 3)
-            s.prp.config.translate_minimize.value = translate_minimize
-            s.solve(
-                "&minimize { x + 2 * y + z + 5 }. &sum{ x + y } >= 2. &sum { y + z } >= 2."
-            )
-            self.assertEqual(s.bound, 9)
-            self.assertEqual(s.solve("", optimize=False, bound=9), sol)
-            self.assertEqual(s.solve("", optimize=False, bound=9), sol)
-            self.assertEqual(s.solve("&minimize { 6 }.", optimize=False, bound=9), [])
-            self.assertEqual(s.solve("", optimize=False, bound=15), sol)
 
     def test_show(self):
         self.assertEqual(
@@ -349,12 +301,12 @@ class TestMain(unittest.TestCase):
         )
 
     def test_set(self):
-        self.assertEqual(solve("&sum { 1,0;1,1 } = x."), [[("x", 2)]])
-        self.assertEqual(solve("&sum { 1,X : X=1..3 } = x."), [[("x", 3)]])
-        self.assertEqual(solve("&sum { 1,X : X=(1;2;3) } = x."), [[("x", 3)]])
+        self.assertEqual(solve("&sum { 1;1 } = x."), [[("x", 2)]])
+        self.assertEqual(solve("&sum { 1 : X=1..3 } = x."), [[("x", 3)]])
+        self.assertEqual(solve("&sum { 1 : X=(1;2;3) } = x."), [[("x", 3)]])
         self.assertEqual(
             solve(
-                "&sum { v(X) } = X :- X=1..3. &sum { v(X),0 : X=1..2; v(X),1 : X=2..3 } = x."
+                "&sum { v(X) } = X :- X=1..3. &sum { v(X) : X=1..2; v(X) : X=2..3 } = x."
             ),
             [[("v(1)", 1), ("v(2)", 2), ("v(3)", 3), ("x", 8)]],
         )

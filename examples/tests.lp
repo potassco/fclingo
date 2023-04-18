@@ -126,7 +126,6 @@ a :- &fmax{1;x} > 2.
 a :- &fmax{1; x:b} <= 1.
 
 *%
-            &sum {   1 *y + (-5)*x } <= 0.
-            &sum { (-1)*y +   5 *x } <= 0.
-            &sum { 15*x } <= 15.
-            &sum { 10*x } <= 7.
+&distinct { x; y } :- c. 
+&sum { x } = y :- not c. 
+{c}.

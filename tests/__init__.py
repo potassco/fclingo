@@ -27,7 +27,7 @@ class Solver(object):
 
     def __init__(self, minint=-20, maxint=20, threads=8, options=()):
         self.prg = clingo.Control(
-            ["1", "-t", str(threads)] + list(options), message_limit=0
+            ["0", "-t", str(threads)] + list(options), message_limit=0
         )
         self.optimize = False
         self.bound = None
@@ -35,8 +35,8 @@ class Solver(object):
         self.propagator.register(self.prg)
         self.maxint = maxint
         self.minint = minint
-        self.propagator.configure("--max-int", str(maxint))
-        self.propagator.configure("--min-int", str(minint))
+        self.propagator.configure("max-int", str(maxint))
+        self.propagator.configure("min-int", str(minint))
 
         self.prg.add("base", [], THEORY)
 

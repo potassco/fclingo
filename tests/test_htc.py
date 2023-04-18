@@ -230,6 +230,17 @@ class TestMain(unittest.TestCase):
             ),
             [],
         )
+        self.assertEqual(
+            solve(
+                """\
+                      {a;b}.
+            &fsum{1:a,b;2:a;3:b} = x.
+            """,
+                -10,
+                10,
+            ),
+            [[('x', 0)], ['a', ('x', 2)], ['a', 'b', ('x', 6)], ['b', ('x', 3)]],
+        )
 
     def test_assignments(self):
         self.assertEqual(

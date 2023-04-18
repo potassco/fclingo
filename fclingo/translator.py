@@ -125,14 +125,20 @@ class ConstraintTerm(object):
             return ConstraintTerm(
                 None, int(term.number), [], clingo.TheoryTermType.Number
             )
-        name = str(term.name)
         arguments = []
+        name = ""
         for argument in term.arguments:
             arguments.append(ConstraintTerm.copy(argument))
-        if len(arguments) == 0:
+        if term.type == clingo.TheoryTermType.Symbol:
             term_type = clingo.TheoryTermType.Symbol
-        else:
+            name = str(term.name)
+        elif term.type == clingo.TheoryTermType.Function:
             term_type = clingo.TheoryTermType.Function
+            name = str(term.name)
+        else:
+            assert term.type == clingo.TheoryTermType.Tuple
+            term_type = clingo.TheoryTermType.Tuple
+            name = ""
         return ConstraintTerm(name, None, arguments, term_type)
 
 
@@ -201,6 +207,8 @@ class Translator(object):
             return clingo.Function(term.name)
         if term.type == clingo.TheoryTermType.Number:
             return clingo.Number(term.number)
+        if term.type == clingo.TheoryTermType.Tuple:
+            return clingo.Tuple_([self.term_to_symbol(arg) for arg in term.arguments])
         raise RuntimeError("Incorrect Term Type")
 
     def _add_auxvar(self):
@@ -332,6 +340,8 @@ class Translator(object):
                 else:
                     cond = self._add_atom()
                     self._add_rule([cond], element.condition)
+                    for lit in element.condition:
+                        self._add_rule([],[cond,-lit])
                 aux_var = self._add_auxvar()
                 terms = [aux_var]
                 terms.extend(element.terms[1:])
@@ -546,6 +556,8 @@ class Translator(object):
             return backend.add_theory_term_function(term.name, arguments)
         elif term.type == clingo.TheoryTermType.Number:
             return backend.add_theory_term_number(term.number)
+        elif term.type == clingo.TheoryTermType.Tuple:
+            return backend.add_theory_term_sequence(clingo.TheorySequenceType.Tuple,[self._term_id(arg, backend) for arg in term.arguments])
         else:
             assert term.type == clingo.TheoryTermType.Symbol
             return backend.add_theory_term_symbol(parse_term(term.name))
@@ -631,6 +643,9 @@ class Translator(object):
                 for var in self.vars(element.terms[0]):
                     def_lit = self._add_defined(var)
                     self._add_rule([def_lit], [])
+            for var in self.vars(atom.guard[1]):
+                def_lit = self._add_defined(var)
+                self._add_rule([def_lit], [])
         elif (
             (
                 match(atom.term, PREFIX + "fsum" + BODY, 0)
