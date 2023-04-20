@@ -1,2 +1,2 @@
-&sum{x}=1 :- &sum{ 1 : a }>= 0.
-a :- &sum{x}=1.
+&fsum{x}=1 :- &fsum{ 1 : a }>= 0.
+a :- &fsum{x}=1.
