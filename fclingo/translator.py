@@ -1,3 +1,7 @@
+"""This module provides classes
+   that translate ASP modulo conditional linear constraints
+   with founded variables into clingcon programs"""
+
 import clingo
 from clingo.symbol import parse_term
 
@@ -8,7 +12,7 @@ AUX = "__aux"
 DEF = "__def"
 
 
-class ConstraintAtom(object):
+class ConstraintAtom:
     """
     Representation of a constraint atom.
     """
@@ -51,7 +55,7 @@ class ConstraintAtom(object):
         return ConstraintAtom(elements, guard, literal, term)
 
 
-class ConstraintElement(object):
+class ConstraintElement:
     """
     Tuple of terms.
     """
@@ -88,7 +92,7 @@ class ConstraintElement(object):
         return ConstraintElement(terms, None, condition_id)
 
 
-class ConstraintTerm(object):
+class ConstraintTerm:
     """
     Representation of constraint term.
     """
@@ -158,9 +162,10 @@ FSUM_TERM_BODY = ConstraintTerm(
 )
 
 
-class Translator(object):
+class Translator:
     """
-    Class that translates ASP program with constraint atoms including assignments and conditionals into a Clingcon program.
+    Class that translates ASP program with constraint atoms
+    including assignments and conditionals into a Clingcon program.
     """
 
     def __init__(self, prg, appconfig):
@@ -341,7 +346,7 @@ class Translator(object):
                     cond = self._add_atom()
                     self._add_rule([cond], element.condition)
                     for lit in element.condition:
-                        self._add_rule([],[cond,-lit])
+                        self._add_rule([], [cond, -lit])
                 aux_var = self._add_auxvar()
                 terms = [aux_var]
                 terms.extend(element.terms[1:])
@@ -557,7 +562,10 @@ class Translator(object):
         elif term.type == clingo.TheoryTermType.Number:
             return backend.add_theory_term_number(term.number)
         elif term.type == clingo.TheoryTermType.Tuple:
-            return backend.add_theory_term_sequence(clingo.TheorySequenceType.Tuple,[self._term_id(arg, backend) for arg in term.arguments])
+            return backend.add_theory_term_sequence(
+                clingo.TheorySequenceType.Tuple,
+                [self._term_id(arg, backend) for arg in term.arguments],
+            )
         else:
             assert term.type == clingo.TheoryTermType.Symbol
             return backend.add_theory_term_symbol(parse_term(term.name))
