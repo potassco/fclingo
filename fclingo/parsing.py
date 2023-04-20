@@ -2,9 +2,6 @@
 This module contains functions for parsing and normalizing constraints.
 """
 
-from functools import reduce  # pylint: disable=redefined-builtin
-
-import clingo
 from clingo import ast
 
 PREFIX = "__"
@@ -73,10 +70,20 @@ THEORY = (
 
 
 class HeadBodyTransformer(ast.Transformer):
+    """
+    Class for tagging location of theory atoms.
+    """
+
     def visit_Literal(self, lit, in_lit=False):
+        """
+        Visit all literals.
+        """
         return lit.update(**self.visit_children(lit, True))
 
     def visit_TheoryAtom(self, atom, in_lit=False):
+        """
+        Rewrite theory atoms depending on location.
+        """
         term = atom.term
         if term.name in ["fsum", "fin", "fmax", "fmin"] and not term.arguments:
             loc = BODY if in_lit else HEAD

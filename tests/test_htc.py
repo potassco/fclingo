@@ -239,7 +239,7 @@ class TestMain(unittest.TestCase):
                 -10,
                 10,
             ),
-            [[('x', 0)], ['a', ('x', 2)], ['a', 'b', ('x', 6)], ['b', ('x', 3)]],
+            [[("x", 0)], ["a", ("x", 2)], ["a", "b", ("x", 6)], ["b", ("x", 3)]],
         )
 
     def test_assignments(self):

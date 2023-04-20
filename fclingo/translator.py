@@ -582,7 +582,7 @@ class Translator:
                 self._print_constraints.add(atom)
             self._sum_constraints.add(atom)
             lit = backend.add_atom()
-            if atom.literal == None or atom.literal == 0:
+            if atom.literal is None or atom.literal == 0:
                 atom.literal = lit
             name = self._term_id(atom.term, backend)
             elements = [
