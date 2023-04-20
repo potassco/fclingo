@@ -1,11 +1,6 @@
 # fclingo
 
-This project template is configured to ease collaboration. Linters, formatters,
-and actions are already configured and ready to use.
-
-To use the project template, run the `init.py` script to give the project a
-name and some metadata. The script can then be removed afterward and the
-`setup.cfg` file adjusted.
+fclingo is a solver for ASP modulo conditional linear constraints with founded variables.
 
 ## Installation
 
@@ -16,7 +11,7 @@ pip install fclingo
 ## Usage
 
 ```shell
-fclingo -h
+python -m fclingo -h
 ```
 
 ## Development

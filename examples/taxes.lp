@@ -12,17 +12,20 @@ deduction(mary, 10000, 10001).
 
 1 { lives(P,R) : region(R) } 1 :- person(P).
 
-&sum{ 0 } =: deduction(P) :- person(P), not deduction(P,_,_).
-&in{ L..H } =: deduction(P) :- deduction(P,L,H).
-&sum{ T } =: rate(P) :- lives(P,R), income(P,I),
+&fsum{ 0 } =: deduction(P) :- person(P), not deduction(P,_,_).
+&fin{ L..H } =: deduction(P) :- deduction(P,L,H).
+&fsum{ T } =: rate(P) :- lives(P,R), income(P,I),
                         T = #max{ T' : rate(R,L,T'), I>=L}.
 
-&sum{ I*rate(P)-100*deduction(P) } =: 100*tax(P) :- income(P,I).
-&sum{ tax(P) : lives(P,R) } =: total(R) :- region(R).
-&min{ tax(P) : person(P) } =: min.
-&max{ tax(P) : person(P) } =: max.
-min_taxes(P) :- &min{ tax(P') : person(P') } = tax(P), person(P).
-max_taxes(P) :- &max{ tax(P') : person(P') } = tax(P), person(P).
+&fsum{ I*rate(P)-100*deduction(P) } =: 100*tax(P) :- income(P,I).
+&fsum{ tax(P) : lives(P,R) } =: total(R) :- region(R).
+&fmin{ tax(P) : person(P) } =: min.
+&fmax{ tax(P) : person(P) } =: max.
+min_taxes(P) :- &fmin{ tax(P') : person(P') } = tax(P), person(P).
+max_taxes(P) :- &fmax{ tax(P') : person(P') } = tax(P), person(P).
+
+&sum{x}=0.
+a :- &sum{x}=0.
 
 #show lives/2.
 #show min_taxes/1.
