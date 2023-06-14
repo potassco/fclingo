@@ -11,7 +11,7 @@ pip install fclingo
 ## Usage
 
 ```shell
-python -m fclingo -h
+fclingo -h
 ```
 
 ## Development
