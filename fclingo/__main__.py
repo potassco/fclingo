@@ -153,6 +153,9 @@ class FclingoApp(clingo.Application):
         prg.solve(on_model=self.on_model, on_statistics=self._theory.on_statistics)
 
 
-if __name__ == "__main__":
+def main():
     arguments = sys.argv[1:]
     sys.exit(int(clingo.clingo_main(FclingoApp(), arguments)))
+
+if __name__ == "__main__":
+    main()
