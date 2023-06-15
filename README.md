@@ -5,7 +5,7 @@ fclingo is a solver for ASP modulo conditional linear constraints with founded v
 ## Installation
 
 ```shell
-pip install fclingo
+pip install . -r requirements.txt
 ```
 
 ## Usage
