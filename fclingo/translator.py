@@ -11,6 +11,12 @@ from fclingo.parsing import BODY, HEAD, PREFIX
 AUX = "__aux"
 DEF = "__def"
 
+from enum import Enum
+
+class TheorySequenceType(Enum):
+    Tuple = 1
+    Set = 2
+    List = 3
 
 class ConstraintAtom:
     """
@@ -563,7 +569,7 @@ class Translator:
             return backend.add_theory_term_number(term.number)
         elif term.type == clingo.TheoryTermType.Tuple:
             return backend.add_theory_term_sequence(
-                clingo.TheorySequenceType.Tuple,
+                TheorySequenceType.Tuple,
                 [self._term_id(arg, backend) for arg in term.arguments],
             )
         else:
