@@ -4,7 +4,7 @@ import nox
 
 nox.options.sessions = "lint_flake8", "lint_pylint", "test"
 
-PYTHON_VERSIONS = ["3.6", "3.9"] if "GITHUB_ACTIONS" in os.environ else None
+PYTHON_VERSIONS = ["3.9"] if "GITHUB_ACTIONS" in os.environ else None
 
 
 @nox.session
@@ -46,11 +46,11 @@ def lint_flake8(session):
 
 @nox.session
 def lint_pylint(session):
-    session.install("-r", f".github/requirements.txt", "pylint")
+    session.install("-r", f"requirements.txt", "pylint")
     session.run("pylint", "fclingo")
 
 
 @nox.session(python=PYTHON_VERSIONS)
 def test(session):
-    session.install("-r", f".github/requirements.txt")
+    session.install("-r", f"requirements.txt")
     session.run("python", "-m", "unittest", "discover", "-v")

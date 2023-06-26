@@ -17,7 +17,7 @@ MIN_INT = -1073741823
 CSP = "__csp"
 
 
-class AppConfig(object):
+class AppConfig:
     """
     Class for application specific options.
     """
@@ -124,18 +124,18 @@ class FclingoApp(clingo.Application):
         with open(path) as file_:
             return file_.read()
 
-    def main(self, prg, files):
+    def main(self, control, files):
         """
         Entry point of the application registering the propagator and
         implementing the standard ground and solve functionality.
         """
 
-        self._theory.register(prg)
+        self._theory.register(control)
 
         if not files:
             files = ["-"]
 
-        with ProgramBuilder(prg) as bld:
+        with ProgramBuilder(control) as bld:
             hbt = HeadBodyTransformer()
             parse_files(
                 files,
@@ -144,18 +144,23 @@ class FclingoApp(clingo.Application):
                 ),
             )
 
-        prg.add("base", [], THEORY)
-        prg.ground([("base", [])])
-        translator = Translator(prg, self.config)
+        control.add("base", [], THEORY)
+        control.ground([("base", [])])
+        translator = Translator(control, self.config)
         translator.translate()
 
-        self._theory.prepare(prg)
-        prg.solve(on_model=self.on_model, on_statistics=self._theory.on_statistics)
+        self._theory.prepare(control)
+        control.solve(on_model=self.on_model, on_statistics=self._theory.on_statistics)
 
 
 def main():
+    """
+    Main function executing the fclingo application.
+    """
+
     arguments = sys.argv[1:]
     sys.exit(int(clingo.clingo_main(FclingoApp(), arguments)))
+
 
 if __name__ == "__main__":
     main()
