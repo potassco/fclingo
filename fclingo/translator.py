@@ -11,12 +11,6 @@ from fclingo.parsing import BODY, HEAD, PREFIX
 AUX = "__aux"
 DEF = "__def"
 
-from enum import Enum
-
-class TheorySequenceType(Enum):
-    Tuple = 1
-    Set = 2
-    List = 3
 
 class ConstraintAtom:
     """
@@ -569,7 +563,7 @@ class Translator:
             return backend.add_theory_term_number(term.number)
         elif term.type == clingo.TheoryTermType.Tuple:
             return backend.add_theory_term_sequence(
-                TheorySequenceType.Tuple,
+                clingo.TheorySequenceType.Tuple,
                 [self._term_id(arg, backend) for arg in term.arguments],
             )
         else:
@@ -693,7 +687,8 @@ class Translator:
     def translate(self):
         """
         Translates ASP program with constraint atoms including assignments and conditionals into a Clingcon program.
-        Adds rules implementing definition of variables, assignments, conditional linear constraint atoms and aggregates max and min.
+        Adds rules implementing definition of variables, assignments,
+        conditional linear constraint atoms and aggregates max and min.
         Returns sum constraints to be added to Clingcon.
         """
         self._translate_constraints()

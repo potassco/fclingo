@@ -195,6 +195,26 @@ SOL_CAR = [
 
 
 class TestMain(unittest.TestCase):
+    def test_naming(self):
+        self.assertEqual(
+            solve(
+                """\
+            &fsum{x((),y)}=4.""",
+                -10,
+                10,
+            ),
+            [[("x((),y)", 4)]],
+        )
+        self.assertEqual(
+            solve(
+                """\
+            &fsum{4}=x(y,()).""",
+                -10,
+                10,
+            ),
+            [[("x(y,())", 4)]],
+        )
+
     def test_conditionals(self):
         self.assertEqual(
             solve(
