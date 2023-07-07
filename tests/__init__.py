@@ -2,15 +2,14 @@
 Basic functions to run tests.
 """
 
-import collections
-
 import clingo
 from clingcon import ClingconTheory
 from clingo.ast import ProgramBuilder, parse_string
 
-from fclingo import AUX, THEORY, Translator
+from fclingo import THEORY, Translator
 from fclingo.__main__ import CSP
 from fclingo.parsing import HeadBodyTransformer
+from fclingo.translator import DEF
 
 
 class Config:
