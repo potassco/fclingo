@@ -340,7 +340,7 @@ class Translator:
             )
         for element in atom.elements:
             if len(element.condition) > 0:
-                if len(element.condition) == 1:
+                if len(element.condition) == 1 and element.condition[0] > 0:
                     cond = element.condition[0]
                 else:
                     cond = self._add_atom()

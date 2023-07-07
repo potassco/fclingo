@@ -261,6 +261,38 @@ class TestMain(unittest.TestCase):
             ),
             [[("x", 0)], ["a", ("x", 2)], ["a", "b", ("x", 6)], ["b", ("x", 3)]],
         )
+        self.assertEqual(
+            solve(
+                """\
+            {a;b}.
+            &fsum{1:a,b} = x.
+            """,
+                -10,
+                10,
+            ),
+            [[("x", 0)], ["a", ("x", 0)], ["a", "b", ("x", 1)], ["b", ("x", 0)]],
+        )
+        self.assertEqual(
+            solve(
+                """\
+            b :- &fsum{ v : not b } >= 1.
+            """,
+                -10,
+                10,
+            ),
+            [[("v", 0)]],
+        )
+        self.assertEqual(
+            solve(
+                """\
+            {a;b}.
+            &fsum{1:a, not b} = x.
+            """,
+                -10,
+                10,
+            ),
+            [[("x", 0)], ["a", ("x", 1)], ["a", "b", ("x", 0)], ["b", ("x", 0)]],
+        )
 
     def test_assignments(self):
         self.assertEqual(
