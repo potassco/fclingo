@@ -215,6 +215,44 @@ class TestMain(unittest.TestCase):
             [[("x(y,())", 4)]],
         )
 
+    def test_multiset(self):
+        self.assertEqual(
+            solve(
+                """\
+            &fsum{1;1}=2.""",
+                -10,
+                10,
+            ),
+            [[]],
+        )
+        self.assertEqual(
+            solve(
+                """\
+            &fsum{N:N=1..2; M:M=2..3} = 8.""",
+                -10,
+                10,
+            ),
+            [[]],
+        )
+        self.assertEqual(
+            solve(
+                """\
+            &fsum{x;x} = 2*x.""",
+                2,
+                2,
+            ),
+            [[("x", 2)]],
+        )
+        self.assertEqual(
+            solve(
+                """\
+            &fsum{x(N):N=1..2;x(M):M=2..3} = x(1)+2*x(2)+x(3).""",
+                2,
+                2,
+            ),
+            [[("x(1)", 2), ("x(2)", 2), ("x(3)", 2)]],
+        )
+
     def test_conditionals(self):
         self.assertEqual(
             solve(
