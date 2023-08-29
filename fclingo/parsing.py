@@ -1,7 +1,7 @@
 """
 This module contains functions for parsing and normalizing constraints.
 """
-
+import clingo
 from clingo import ast
 
 PREFIX = "__"
@@ -74,6 +74,31 @@ class HeadBodyTransformer(ast.Transformer):
     Class for tagging location of theory atoms.
     """
 
+    def _rewrite_tuple(self, element, number):
+        """
+        Add variables to tuple to ensure multiset semantics.
+        """
+
+        element.terms = list(element.terms)
+        if number is not None:
+            element.terms.append(
+                ast.SymbolicTerm(element.terms[0].location, clingo.Number(number))
+            )
+
+        return element
+
+    def _rewrite_tuples(self, elements):
+        """
+        Add variables to tuples of elements to ensure multiset semantics.
+        """
+        elements = [
+            new_element for element in elements for new_element in element.unpool()
+        ]
+        if len(elements) == 1:
+            return elements
+
+        return [self._rewrite_tuple(element, n) for n, element in enumerate(elements)]
+
     def visit_Literal(self, lit, in_lit=False):
         """
         Visit all literals.
@@ -93,6 +118,7 @@ class HeadBodyTransformer(ast.Transformer):
                     PREFIX + term.name + loc,
                     [],
                     False,
-                )
+                ),
+                elements=self._rewrite_tuples(atom.elements),
             )
         return atom
