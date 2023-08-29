@@ -176,6 +176,7 @@ class Translator:
         self._sum_constraints = set()
         self._fsum_constraints = set()
         self._print_constraints = set()
+        self._fixed = set()
 
     def vars(self, term):
         """
@@ -270,10 +271,13 @@ class Translator:
             print(head_str, seperator, body_str, ".")
 
     def _add_defined(self, var, reason=None):
+        var = ConstraintTerm.copy(var)
         if var not in self._defined:
+            sym = clingo.Function(DEF, [self.term_to_symbol(var)])
             self._defined[var] = self._add_atom(
-                clingo.Function(DEF, [self.term_to_symbol(var)])
+                sym
             )
+            (f"Added a entry in defined {sym} -> {self._defined[var]}")
         defined_lit = self._defined[var]
         if reason is not None:
             self._add_rule([defined_lit], reason)
@@ -291,10 +295,13 @@ class Translator:
             for var in self.vars(element.terms[0]):
                 if element.condition:
                     reason.append(element.condition_id)
-                self._add_defined(var, reason)
+                self._add_defined(element, reason)
 
     def _fix_undefined(self):
         for var, lit in self._defined.items():
+            if var in self._fixed:
+                continue
+            self._fixed.add(var)
             fix_val = self._add_clingcon_constraint(
                 ConstraintAtom(
                     [ConstraintElement([var], None, None)],
@@ -680,11 +687,11 @@ class Translator:
         else:
             self._print_constraints.add(ConstraintAtom.copy(atom))
 
-    def _translate_constraints(self):
+    def _translate_constraints(self,theory_atoms=None):
         for atom in self._prg.theory_atoms:
             self._translate_constraint(atom)
 
-    def translate(self):
+    def translate(self, theory_atoms=None):
         """
         Translates ASP program with constraint atoms including assignments and conditionals into a Clingcon program.
         Adds rules implementing definition of variables, assignments,
