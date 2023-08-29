@@ -145,6 +145,13 @@ class ConstraintTerm:
             name = ""
         return ConstraintTerm(name, None, arguments, term_type)
 
+    def __eq__(self, another_term):
+        if not isinstance(another_term, ConstraintTerm):
+            raise TypeError('Can only compare two ConstraintTerms')   
+        return str(self) == str(another_term)
+    
+    def __hash__(self):
+        return hash(str(self))
 
 ONE = ConstraintTerm(None, 1, None, clingo.TheoryTermType.Number)
 ZERO = ConstraintTerm(None, 0, None, clingo.TheoryTermType.Number)
@@ -273,11 +280,9 @@ class Translator:
     def _add_defined(self, var, reason=None):
         var = ConstraintTerm.copy(var)
         if var not in self._defined:
-            sym = clingo.Function(DEF, [self.term_to_symbol(var)])
             self._defined[var] = self._add_atom(
-                sym
+                clingo.Function(DEF, [self.term_to_symbol(var)])
             )
-            (f"Added a entry in defined {sym} -> {self._defined[var]}")
         defined_lit = self._defined[var]
         if reason is not None:
             self._add_rule([defined_lit], reason)
@@ -295,7 +300,7 @@ class Translator:
             for var in self.vars(element.terms[0]):
                 if element.condition:
                     reason.append(element.condition_id)
-                self._add_defined(element, reason)
+                self._add_defined(var, reason)
 
     def _fix_undefined(self):
         for var, lit in self._defined.items():
@@ -687,11 +692,11 @@ class Translator:
         else:
             self._print_constraints.add(ConstraintAtom.copy(atom))
 
-    def _translate_constraints(self,theory_atoms=None):
+    def _translate_constraints(self):
         for atom in self._prg.theory_atoms:
             self._translate_constraint(atom)
 
-    def translate(self, theory_atoms=None):
+    def translate(self):
         """
         Translates ASP program with constraint atoms including assignments and conditionals into a Clingcon program.
         Adds rules implementing definition of variables, assignments,
