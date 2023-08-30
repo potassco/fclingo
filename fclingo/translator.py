@@ -145,6 +145,13 @@ class ConstraintTerm:
             name = ""
         return ConstraintTerm(name, None, arguments, term_type)
 
+    def __eq__(self, another_term):
+        if not isinstance(another_term, ConstraintTerm):
+            raise TypeError('Can only compare two ConstraintTerms')   
+        return str(self) == str(another_term)
+    
+    def __hash__(self):
+        return hash(str(self))
 
 ONE = ConstraintTerm(None, 1, None, clingo.TheoryTermType.Number)
 ZERO = ConstraintTerm(None, 0, None, clingo.TheoryTermType.Number)
@@ -176,6 +183,7 @@ class Translator:
         self._sum_constraints = set()
         self._fsum_constraints = set()
         self._print_constraints = set()
+        self._fixed = set()
 
     def vars(self, term):
         """
@@ -270,6 +278,7 @@ class Translator:
             print(head_str, seperator, body_str, ".")
 
     def _add_defined(self, var, reason=None):
+        var = ConstraintTerm.copy(var)
         if var not in self._defined:
             self._defined[var] = self._add_atom(
                 clingo.Function(DEF, [self.term_to_symbol(var)])
@@ -295,6 +304,9 @@ class Translator:
 
     def _fix_undefined(self):
         for var, lit in self._defined.items():
+            if var in self._fixed:
+                continue
+            self._fixed.add(var)
             fix_val = self._add_clingcon_constraint(
                 ConstraintAtom(
                     [ConstraintElement([var], None, None)],
