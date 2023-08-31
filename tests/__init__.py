@@ -76,7 +76,7 @@ class Solver(object):
 
         self.prg.ground([("base", [])])
         translator = Translator(self.prg, Config(self.maxint, self.minint, False))
-        translator.translate()
+        translator.translate(self.prg.theory_atoms)
 
         ret = []
         self.propagator.prepare(self.prg)

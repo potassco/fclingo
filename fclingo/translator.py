@@ -692,17 +692,17 @@ class Translator:
         else:
             self._print_constraints.add(ConstraintAtom.copy(atom))
 
-    def _translate_constraints(self):
-        for atom in self._prg.theory_atoms:
+    def _translate_constraints(self, theory_atoms):
+        for atom in theory_atoms:
             self._translate_constraint(atom)
 
-    def translate(self):
+    def translate(self, theory_atoms):
         """
         Translates ASP program with constraint atoms including assignments and conditionals into a Clingcon program.
         Adds rules implementing definition of variables, assignments,
         conditional linear constraint atoms and aggregates max and min.
         Returns sum constraints to be added to Clingcon.
         """
-        self._translate_constraints()
+        self._translate_constraints(theory_atoms)
         self._fix_undefined()
         self._prg.cleanup()
