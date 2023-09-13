@@ -22,12 +22,6 @@ class AppConfig:
     Class for application specific options.
     """
 
-    def __init__(self):
-        self.print_aux = clingo.Flag(False)
-        self.print_trans = clingo.Flag(False)
-        self.min_int = MIN_INT
-        self.max_int = MAX_INT
-
     def __init__(self, min_int, max_int, print_translation, print_auxiliary):
         self.print_aux = print_auxiliary
         self.print_trans = print_translation
@@ -44,7 +38,7 @@ class FclingoApp(clingo.Application):
     def __init__(self):
         self.program_name = "fclingo"
         self.version = "0.1"
-        self.config = AppConfig()
+        self.config = AppConfig(MIN_INT,MAX_INT,clingo.Flag(False),clingo.Flag(False))
         self._theory = ClingconTheory()
         self._answer = 0
 
