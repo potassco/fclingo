@@ -28,6 +28,12 @@ class AppConfig:
         self.min_int = MIN_INT
         self.max_int = MAX_INT
 
+    def __init__(self, min_int, max_int, print_translation, print_auxiliary):
+        self.print_aux = print_auxiliary
+        self.print_trans = print_translation
+        self.min_int = min_int
+        self.max_int = max_int
+
 
 class FclingoApp(clingo.Application):
     """
@@ -131,6 +137,8 @@ class FclingoApp(clingo.Application):
         """
 
         self._theory.register(control)
+        self._theory.configure("max-int", str(self.config.max_int))
+        self._theory.configure("min-int", str(self.config.min_int))
 
         if not files:
             files = ["-"]
@@ -147,7 +155,7 @@ class FclingoApp(clingo.Application):
         control.add("base", [], THEORY)
         control.ground([("base", [])])
         translator = Translator(control, self.config)
-        translator.translate()
+        translator.translate(control.theory_atoms)
 
         self._theory.prepare(control)
         control.solve(on_model=self.on_model, on_statistics=self._theory.on_statistics)
