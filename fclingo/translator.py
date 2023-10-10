@@ -9,7 +9,7 @@ from fclingo.astutil import match
 from fclingo.parsing import BODY, HEAD, PREFIX
 
 AUX = "__aux"
-DEF = "__def"
+DEF = "df"
 
 
 class ConstraintAtom:
@@ -167,6 +167,9 @@ SUM_TERM_BODY = ConstraintTerm(
 FSUM_TERM_BODY = ConstraintTerm(
     PREFIX + "fsum" + BODY, None, [], clingo.TheoryTermType.Function
 )
+DEF_TERM = ConstraintTerm(
+    DEF, None, [], clingo.TheoryTermType.Function
+)
 
 
 class Translator:
@@ -280,9 +283,17 @@ class Translator:
     def _add_defined(self, var, reason=None):
         var = ConstraintTerm.copy(var)
         if var not in self._defined:
-            self._defined[var] = self._add_atom(
-                clingo.Function(DEF, [self.term_to_symbol(var)])
-            )
+            lit = None
+            for atom in self._prg.theory_atoms:
+                if match(atom.term, DEF, 0) and str(atom.elements[0].terms[0]) == str(var):
+                    lit = atom.literal
+            if not lit:
+                with self._prg.backend() as backend:
+                    lit = backend.add_atom()
+                    name = self._term_id(DEF_TERM, backend)
+                    elements = [ backend.add_theory_element([self._term_id(var,backend)],[]) ]
+                    backend.add_theory_atom(lit,name,elements)
+            self._defined[var] = lit
         defined_lit = self._defined[var]
         if reason is not None:
             self._add_rule([defined_lit], reason)
@@ -654,6 +665,7 @@ class Translator:
             or match(atom.term, "dom", 0)
             or match(atom.term, "minimize", 0)
             or match(atom.term, "maximize", 0)
+            or match(atom.term, DEF, 0)
         ):
             return
         elif match(atom.term, PREFIX + "sum" + BODY, 0) or match(
