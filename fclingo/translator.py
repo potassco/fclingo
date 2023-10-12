@@ -283,17 +283,10 @@ class Translator:
     def _add_defined(self, var, reason=None):
         var = ConstraintTerm.copy(var)
         if var not in self._defined:
-            lit = None
-            for atom in self._prg.theory_atoms:
-                if match(atom.term, DEF, 0) and str(atom.elements[0].terms[0]) == str(var):
-                    lit = atom.literal
-            if not lit:
-                with self._prg.backend() as backend:
-                    lit = backend.add_atom()
-                    name = self._term_id(DEF_TERM, backend)
-                    elements = [ backend.add_theory_element([self._term_id(var,backend)],[]) ]
-                    backend.add_theory_atom(lit,name,elements)
-            self._defined[var] = lit
+            with self._prg.backend() as backend:
+                name = self._term_id(DEF_TERM, backend)
+                elements = [ backend.add_theory_element([self._term_id(var,backend)],[]) ]
+                self._defined[var] = backend.add_theory_atom(name,elements)
         defined_lit = self._defined[var]
         if reason is not None:
             self._add_rule([defined_lit], reason)
@@ -604,9 +597,6 @@ class Translator:
                 print()
                 self._print_constraints.add(atom)
             self._sum_constraints.add(atom)
-            lit = backend.add_atom()
-            if atom.literal is None or atom.literal == 0:
-                atom.literal = lit
             name = self._term_id(atom.term, backend)
             elements = [
                 backend.add_theory_element([self._term_id(elem.terms[0], backend)], [])
@@ -614,7 +604,9 @@ class Translator:
             ]
             guard = atom.guard[0]
             rhs = self._term_id(atom.guard[1], backend)
-            backend.add_theory_atom_with_guard(lit, name, elements, guard, rhs)
+            lit = backend.add_theory_atom_with_guard(name, elements, guard, rhs)
+            if atom.literal is None or atom.literal == 0:
+                atom.literal = lit
         return lit
 
     def _add_fsum_constraint(self, atom):
