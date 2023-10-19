@@ -7,16 +7,16 @@ from clingcon import ClingconTheory
 from clingo.ast import ProgramBuilder, parse_string
 
 from fclingo import THEORY, Translator
-from fclingo.__main__ import CSP
+from fclingo.__main__ import CSP, DEF
 from fclingo.parsing import HeadBodyTransformer
-from fclingo.translator import DEF
 
 
 class Config:
-    def __init__(self, max_int, min_int, print_trans) -> None:
+    def __init__(self, max_int, min_int, print_trans ,defined) -> None:
         self.max_int = max_int
         self.min_int = min_int
         self.print_trans = print_trans
+        self.defined = defined
 
 
 class Solver(object):
@@ -75,7 +75,7 @@ class Solver(object):
             )
 
         self.prg.ground([("base", [])])
-        translator = Translator(self.prg, Config(self.maxint, self.minint, False))
+        translator = Translator(self.prg, Config(self.maxint, self.minint, False, DEF))
         translator.translate(self.prg.theory_atoms)
 
         ret = []

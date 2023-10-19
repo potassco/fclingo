@@ -215,6 +215,57 @@ class TestMain(unittest.TestCase):
             [[("x(y,())", 4)]],
         )
 
+    def test_defined(self):
+        self.assertEqual(
+            solve(
+                """\
+            b :- &df{x}.""",
+                -10,
+                10,
+            ),
+            [[("x", 0)]],
+        )
+        self.assertEqual(
+            solve(
+                """\
+            b :- not &df{x}.""",
+                -10,
+                10,
+            ),
+            [["b",("x", 0)]],
+        )
+        self.assertEqual(
+            solve(
+                """\
+            b :- &df{x}.
+            &fsum{x} = 0.""",
+                -10,
+                10,
+            ),
+            [["b",("x", 0)]],
+        )
+        self.assertEqual(
+            solve(
+                """\
+            b :- &df{x}.
+            &fsum{y} =: x.""",
+                -10,
+                10,
+            ),
+            [[("x", 0),("y", 0)]],
+        )
+        self.assertEqual(
+            solve(
+                """\
+            b :- &df{x}.
+            &fsum{y} =: x.
+            &fsum{y} = 2.""",
+                -10,
+                10,
+            ),
+            [["b",("x",2),("y",2)]],
+        )
+
     def test_multiset(self):
         self.assertEqual(
             solve(
