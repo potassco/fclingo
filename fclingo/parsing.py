@@ -10,6 +10,7 @@ BODY = "_b"
 THEORY = (
     """\
 #theory htc {
+    function_term {};
     sum_term {
     -  : 3, unary;
     ** : 2, binary, right;
@@ -63,7 +64,8 @@ THEORY = (
     + PREFIX
     + """fin"""
     + HEAD
-    + """/0 : dom_term, {=:}, sum_term, head
+    + """/0 : dom_term, {=:}, sum_term, head;
+    &df/0 : function_term, body
 }.
 """
 )

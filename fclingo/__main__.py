@@ -10,23 +10,24 @@ from clingo.ast import ProgramBuilder, parse_files
 
 from fclingo import THEORY
 from fclingo.parsing import HeadBodyTransformer
-from fclingo.translator import AUX, DEF, Translator
+from fclingo.translator import AUX, Translator
 
 MAX_INT = 1073741823
 MIN_INT = -1073741823
 CSP = "__csp"
-
+DEF = "__def"
 
 class AppConfig:
     """
     Class for application specific options.
     """
 
-    def __init__(self, min_int, max_int, print_translation, print_auxiliary):
+    def __init__(self, min_int, max_int, print_translation, print_auxiliary, defined):
         self.print_aux = print_auxiliary
         self.print_trans = print_translation
         self.min_int = min_int
         self.max_int = max_int
+        self.defined = defined
 
 
 class FclingoApp(clingo.Application):
@@ -38,7 +39,7 @@ class FclingoApp(clingo.Application):
     def __init__(self):
         self.program_name = "fclingo"
         self.version = "0.1"
-        self.config = AppConfig(MIN_INT,MAX_INT,clingo.Flag(False),clingo.Flag(False))
+        self.config = AppConfig(MIN_INT,MAX_INT,clingo.Flag(False),clingo.Flag(False), DEF)
         self._theory = ClingconTheory()
         self._answer = 0
 
@@ -52,7 +53,7 @@ class FclingoApp(clingo.Application):
         shown = [
             str(atom)
             for atom in model.symbols(shown=True)
-            if not (atom.name == DEF and len(atom.arguments) == 1)
+            if not (atom.name == self.config.defined and len(atom.arguments) == 1)
         ]
         valuation = [
             "val("
@@ -63,7 +64,7 @@ class FclingoApp(clingo.Application):
             for assignment in model.symbols(theory=True)
             if assignment.name == CSP
             and len(assignment.arguments) == 2
-            and model.contains(clingo.Function(DEF, [assignment.arguments[0]]))
+            and model.contains(clingo.Function(self.config.defined, [assignment.arguments[0]]))
             and not assignment.arguments[0].name == AUX
         ]
         shown.extend(valuation)
@@ -72,7 +73,7 @@ class FclingoApp(clingo.Application):
             defs = [
                 str(atom)
                 for atom in model.symbols(shown=True)
-                if atom.name == DEF and len(atom.arguments) == 1
+                if atom.name == self.config.defined and len(atom.arguments) == 1
             ]
             auxvars = [
                 "val("
@@ -90,6 +91,12 @@ class FclingoApp(clingo.Application):
 
     def _flag_str(self, flag):
         return "yes" if flag else "no"
+    
+    def _parse_defined_predicate(self,name):
+        if name[0].islower() and name.contains("[a-zA-Z0-9]+"):
+            self.config.defined = name
+            return True
+        return False
 
     def register_options(self, options):
         """
@@ -112,6 +119,12 @@ class FclingoApp(clingo.Application):
             "print-translation,@2",
             "Print translation [{}]".format(self._flag_str(self.config.print_trans)),
             self.config.print_trans,
+        )
+        options.add(
+            group,
+            "defined-predicate",
+            "Name of the defined predicate [{}]".format(self.config.defined),
+            self._parse_defined_predicate
         )
 
     def _on_statistics(self, step, akku):
