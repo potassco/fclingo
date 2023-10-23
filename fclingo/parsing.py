@@ -4,7 +4,7 @@ This module contains functions for parsing and normalizing constraints.
 import clingo
 from clingo import ast
 
-PREFIX = "__"
+PREFIX = "__f"
 HEAD = "_h"
 BODY = "_b"
 THEORY = (
@@ -32,37 +32,47 @@ THEORY = (
     };
     &"""
     + PREFIX
-    + """fsum"""
+    + """sum"""
+    + BODY
+    + """/0 : sum_term, {<=,=,!=,<,>,>=}, sum_term, body;
+    &"""
+    + PREFIX
+    + """sum"""
+    + HEAD
+    + """/0 : sum_term, {<=,=,!=,<,>,>=}, sum_term, head;
+    &"""
+    + PREFIX
+    + """clc"""
     + BODY
     + """/0 : sum_term, {<=,=,!=,<,>,>=,=:}, sum_term, body;
     &"""
     + PREFIX
-    + """fsum"""
+    + """clc"""
     + HEAD
     + """/0 : sum_term, {<=,=,!=,<,>,>=,=:}, sum_term, head;
     &"""
     + PREFIX
-    + """fmax"""
+    + """max"""
     + BODY
     + """/0 : sum_term, {<=,=,!=,<,>,>=,=:}, sum_term, body;
     &"""
     + PREFIX
-    + """fmax"""
+    + """max"""
     + HEAD
     + """/0 : sum_term, {<=,=,!=,<,>,>=,=:}, sum_term, head;
     &"""
     + PREFIX
-    + """fmin"""
+    + """min"""
     + BODY
     + """/0 : sum_term, {<=,=,!=,<,>,>=,=:}, sum_term, body;
     &"""
     + PREFIX
-    + """fmin"""
+    + """min"""
     + HEAD
     + """/0 : sum_term, {<=,=,!=,<,>,>=,=:}, sum_term, head;
     &"""
     + PREFIX
-    + """fin"""
+    + """in"""
     + HEAD
     + """/0 : dom_term, {=:}, sum_term, head;
     &df/0 : function_term, body
@@ -112,7 +122,7 @@ class HeadBodyTransformer(ast.Transformer):
         Rewrite theory atoms depending on location.
         """
         term = atom.term
-        if term.name in ["fsum", "fin", "fmax", "fmin"] and not term.arguments:
+        if term.name in ["sum", "clc", "in", "max", "min"] and not term.arguments:
             loc = BODY if in_lit else HEAD
             atom = atom.update(
                 term=ast.Function(
