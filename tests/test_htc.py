@@ -199,7 +199,7 @@ class TestMain(unittest.TestCase):
         self.assertEqual(
             solve(
                 """\
-            &clc{x((),y)}=4.""",
+            &sus{x((),y)}=4.""",
                 -10,
                 10,
             ),
@@ -208,7 +208,7 @@ class TestMain(unittest.TestCase):
         self.assertEqual(
             solve(
                 """\
-            &clc{4}=x(y,()).""",
+            &sus{4}=x(y,()).""",
                 -10,
                 10,
             ),
@@ -238,7 +238,7 @@ class TestMain(unittest.TestCase):
             solve(
                 """\
             b :- &df{x}.
-            &clc{x} = 0.""",
+            &sus{x} = 0.""",
                 -10,
                 10,
             ),
@@ -248,7 +248,7 @@ class TestMain(unittest.TestCase):
             solve(
                 """\
             b :- &df{x}.
-            &clc{y} =: x.""",
+            &sus{y} =: x.""",
                 -10,
                 10,
             ),
@@ -258,8 +258,8 @@ class TestMain(unittest.TestCase):
             solve(
                 """\
             b :- &df{x}.
-            &clc{y} =: x.
-            &clc{y} = 2.""",
+            &sus{y} =: x.
+            &sus{y} = 2.""",
                 -10,
                 10,
             ),
@@ -270,7 +270,7 @@ class TestMain(unittest.TestCase):
         self.assertEqual(
             solve(
                 """\
-            &clc{1;1}=2.""",
+            &sus{1;1}=2.""",
                 -10,
                 10,
             ),
@@ -279,7 +279,7 @@ class TestMain(unittest.TestCase):
         self.assertEqual(
             solve(
                 """\
-            &clc{N:N=1..2; M:M=2..3} = 8.""",
+            &sus{N:N=1..2; M:M=2..3} = 8.""",
                 -10,
                 10,
             ),
@@ -288,7 +288,7 @@ class TestMain(unittest.TestCase):
         self.assertEqual(
             solve(
                 """\
-            &clc{x;x} = 2*x.""",
+            &sus{x;x} = 2*x.""",
                 2,
                 2,
             ),
@@ -297,7 +297,7 @@ class TestMain(unittest.TestCase):
         self.assertEqual(
             solve(
                 """\
-            &clc{x(N):N=1..2;x(M):M=2..3} = x(1)+2*x(2)+x(3).""",
+            &sus{x(N):N=1..2;x(M):M=2..3} = x(1)+2*x(2)+x(3).""",
                 2,
                 2,
             ),
@@ -309,7 +309,7 @@ class TestMain(unittest.TestCase):
             solve(
                 """\
             {a}.
-            &clc{1:a} = x.
+            &sus{1:a} = x.
             """,
                 -10,
                 10,
@@ -320,8 +320,8 @@ class TestMain(unittest.TestCase):
             solve(
                 """\
             {a}.
-            &clc{1} = x.
-            b :- &clc{1:a} < x.
+            &sus{1} = x.
+            b :- &sus{1:a} < x.
             """,
                 -10,
                 10,
@@ -331,8 +331,8 @@ class TestMain(unittest.TestCase):
         self.assertEqual(
             solve(
                 """\
-            &clc{x}=1 :- &clc{ 1 : a }>= 0.
-            a :- &clc{x}=1.
+            &sus{x}=1 :- &sus{ 1 : a }>= 0.
+            a :- &sus{x}=1.
             """,
                 -10,
                 10,
@@ -343,7 +343,7 @@ class TestMain(unittest.TestCase):
             solve(
                 """\
                       {a;b}.
-            &clc{1:a,b;2:a;3:b} = x.
+            &sus{1:a,b;2:a;3:b} = x.
             """,
                 -10,
                 10,
@@ -354,7 +354,7 @@ class TestMain(unittest.TestCase):
             solve(
                 """\
             {a;b}.
-            &clc{1:a,b} = x.
+            &sus{1:a,b} = x.
             """,
                 -10,
                 10,
@@ -364,7 +364,7 @@ class TestMain(unittest.TestCase):
         self.assertEqual(
             solve(
                 """\
-            b :- &clc{ v : not b } >= 1.
+            b :- &sus{ v : not b } >= 1.
             """,
                 -10,
                 10,
@@ -375,7 +375,7 @@ class TestMain(unittest.TestCase):
             solve(
                 """\
             {a;b}.
-            &clc{1:a, not b} = x.
+            &sus{1:a, not b} = x.
             """,
                 -10,
                 10,
@@ -387,8 +387,8 @@ class TestMain(unittest.TestCase):
         self.assertEqual(
             solve(
                 """\
-            &clc{1} =: x.
-            &clc{z} =: y.
+            &sus{1} =: x.
+            &sus{z} =: y.
             """,
                 -10,
                 10,
@@ -399,8 +399,8 @@ class TestMain(unittest.TestCase):
             solve(
                 """\
             {a}.
-            &clc{z : a; 1} =: x.
-            &clc{x} =: y.
+            &sus{z : a; 1} =: x.
+            &sus{x} =: y.
             """,
                 -10,
                 10,
@@ -411,8 +411,8 @@ class TestMain(unittest.TestCase):
             solve(
                 """\
             {a}.
-            &clc{1} =: x :- a.
-            b :- &clc{x} > 0.
+            &sus{1} =: x :- a.
+            b :- &sus{x} > 0.
             """,
                 -10,
                 10,
@@ -442,8 +442,8 @@ class TestMain(unittest.TestCase):
         self.assertEqual(
             solve(
                 """\
-            &clc{z} = 1.
-            &clc{y} = 2.
+            &sus{z} = 1.
+            &sus{y} = 2.
             &in{y..z} =: x.
             """,
                 -10,
@@ -454,8 +454,8 @@ class TestMain(unittest.TestCase):
         self.assertEqual(
             solve(
                 """\
-            &clc{z} = 2.
-            &clc{y} = 1.
+            &sus{z} = 2.
+            &sus{y} = 1.
             &in{y..z} =: x.
             """,
                 -10,
@@ -470,8 +470,8 @@ class TestMain(unittest.TestCase):
             solve(
                 """\
             {a}.
-            &clc{z} = 2 :- a.
-            &clc{y} = 1.
+            &sus{z} = 2 :- a.
+            &sus{y} = 1.
             &in{y..z} =: x.
             """,
                 -10,
@@ -498,7 +498,7 @@ class TestMain(unittest.TestCase):
         self.assertEqual(
             solve(
                 """\
-            &clc{x} = 1.
+            &sus{x} = 1.
             a :- &min{3;x} < 2.
             """,
                 -10,
@@ -529,7 +529,7 @@ class TestMain(unittest.TestCase):
             solve(
                 """\
             {b}.
-            &clc{x} = 1.
+            &sus{x} = 1.
             a :- &min{3; x:b} < 2.
             """,
                 -10,
@@ -571,7 +571,7 @@ class TestMain(unittest.TestCase):
         self.assertEqual(
             solve(
                 """\
-            &clc{x} = 3.
+            &sus{x} = 3.
             a :- &max{1;x} > 2.
             """,
                 -10,
@@ -602,7 +602,7 @@ class TestMain(unittest.TestCase):
             solve(
                 """\
             {b}.
-            &clc{x} = 2.
+            &sus{x} = 2.
             a :- &max{1; x:b} <= 1.
             """,
                 -10,
@@ -637,13 +637,13 @@ class TestMain(unittest.TestCase):
 
             1 { lives(P,R) : region(R) } 1 :- person(P).
 
-            &clc{ 0 } =: deduction(P) :- person(P), not deduction(P,_,_).
+            &sus{ 0 } =: deduction(P) :- person(P), not deduction(P,_,_).
             &in{ L..H } =: deduction(P) :- deduction(P,L,H).
-            &clc{ T } =: rate(P) :- lives(P,R), income(P,I),
+            &sus{ T } =: rate(P) :- lives(P,R), income(P,I),
                                     T = #max{ T' : rate(R,L,T'), I>=L}.
 
-            &clc{ I*rate(P)-100*deduction(P) } =: 100*tax(P) :- income(P,I).
-            &clc{ tax(P) : lives(P,R) } =: total(R) :- region(R).
+            &sus{ I*rate(P)-100*deduction(P) } =: 100*tax(P) :- income(P,I).
+            &sus{ tax(P) : lives(P,R) } =: total(R) :- region(R).
             &min{ tax(P) : person(P) } =: min.
             &max{ tax(P) : person(P) } =: max.
             min_taxes(P) :- &min{ tax(P') : person(P') } = tax(P), person(P).
@@ -668,23 +668,23 @@ class TestMain(unittest.TestCase):
             #const n = 8.
             time(0..n).        step(I,I+1) :- time(I), I < n.
 
-            &clc {s(I)+D} =: s(I') :-  acc(D,I'), step(I,I').
-            &clc {s(I)-D} =: s(I') :- slow(D,I'), step(I,I').
+            &sus {s(I)+D} =: s(I') :-  acc(D,I'), step(I,I').
+            &sus {s(I)-D} =: s(I') :- slow(D,I'), step(I,I').
 
-            &clc {s(I)} =: s(I') :- not &clc{ s(I') } != s(I), step(I,I').
+            &sus {s(I)} =: s(I') :- not &sus{ s(I') } != s(I), step(I,I').
 
-            def_s(I) :- time(I), &clc{s(I); -s(I)}=0.
+            def_s(I) :- time(I), &sus{s(I); -s(I)}=0.
 
-            &clc {p(I)+s(I)} =: p(I') :- def_s(I), step(I,I').
+            &sus {p(I)+s(I)} =: p(I') :- def_s(I), step(I,I').
 
-            &clc {400000} =: rdpos.
-            &clc {90000} =: rdlimit.    %  <<< ADDED <<<
+            &sus {400000} =: rdpos.
+            &sus {90000} =: rdlimit.    %  <<< ADDED <<<
 
-            fine(I') :- &clc{ p(I) } < rdpos, &clc{ p(I') } >= rdpos, step(I,I'),
-                        &clc{ s(I') } > rdlimit.
+            fine(I') :- &sus{ p(I) } < rdpos, &sus{ p(I') } >= rdpos, step(I,I'),
+                        &sus{ s(I') } > rdlimit.
 
-            &clc {0} =: p(0).
-            &clc {80000} =: s(0).
+            &sus {0} =: p(0).
+            &sus {80000} =: s(0).
 
             acc(11350,4).
             slow(2301,6).

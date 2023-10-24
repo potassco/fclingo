@@ -42,12 +42,12 @@ THEORY = (
     + """/0 : sum_term, {<=,=,!=,<,>,>=}, sum_term, head;
     &"""
     + PREFIX
-    + """clc"""
+    + """sus"""
     + BODY
     + """/0 : sum_term, {<=,=,!=,<,>,>=,=:}, sum_term, body;
     &"""
     + PREFIX
-    + """clc"""
+    + """sus"""
     + HEAD
     + """/0 : sum_term, {<=,=,!=,<,>,>=,=:}, sum_term, head;
     &"""
@@ -122,7 +122,7 @@ class HeadBodyTransformer(ast.Transformer):
         Rewrite theory atoms depending on location.
         """
         term = atom.term
-        if term.name in ["sum", "clc", "in", "max", "min"] and not term.arguments:
+        if term.name in ["sum", "sus", "in", "max", "min"] and not term.arguments:
             loc = BODY if in_lit else HEAD
             atom = atom.update(
                 term=ast.Function(

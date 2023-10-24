@@ -288,7 +288,7 @@ class Translator:
 
     def _define_variables(self, atom):
         assert (
-            match(atom.term, PREFIX + "sum" + HEAD, 0) or match(atom.term, PREFIX + "clc" + HEAD, 0) or match(atom.term, "__sum" + HEAD, 0)
+            match(atom.term, PREFIX + "sum" + HEAD, 0) or match(atom.term, PREFIX + "sus" + HEAD, 0) or match(atom.term, "__sum" + HEAD, 0)
         ) and not self.conditional(atom)
         for var in self.vars(atom.guard[1]):
             self._add_defined(var, [atom.literal])
@@ -631,7 +631,6 @@ class Translator:
                 defined.append(def_lit)
         for var in self.vars(sum_con.guard[1]):
             def_lit = self._add_defined(var)
-            self._add_rule([], [sum_con.literal, -def_lit])
             defined.append(def_lit)
         if HEAD in sum_con.term.name:
             self._add_rule([clingcon_lit], [sum_con.literal])
@@ -659,8 +658,8 @@ class Translator:
             (
                 match(atom.term, PREFIX + "sum" + BODY, 0)
                 or match(atom.term, PREFIX + "sum" + HEAD, 0)
-                or match(atom.term, PREFIX + "clc" + BODY, 0)
-                or match(atom.term, PREFIX + "clc" + HEAD, 0)
+                or match(atom.term, PREFIX + "sus" + BODY, 0)
+                or match(atom.term, PREFIX + "sus" + HEAD, 0)
             )
             and not self.conditional(atom)
             and atom.guard[0] in ("=", "<", ">", "<=", ">=", "!=")

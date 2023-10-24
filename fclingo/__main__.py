@@ -154,9 +154,7 @@ class FclingoApp(clingo.Application):
             hbt = HeadBodyTransformer()
             parse_files(
                 files,
-                lambda ast: self._theory.rewrite_ast(
-                    ast, lambda stm: bld.add(hbt.visit(stm))
-                ),
+                lambda stm: bld.add(hbt.visit(stm)),
             )
 
         control.add("base", [], THEORY)

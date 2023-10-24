@@ -1,12 +1,12 @@
 %*
 % Standard GZ unsat
-&clc{x}=1 :- &clc{ 1 : a }>= 0.
-a :- &clc{x}=1.
+&sus{x}=1 :- &sus{ 1 : a }>= 0.
+a :- &sus{x}=1.
 
 
 
 % TODO: Weird conditional minimum body example (1 or no stable models?)
-&clc{x} = 1.
+&sus{x} = 1.
 a :- &min{3; x:a} > 2.
 
 
@@ -14,22 +14,22 @@ a :- &min{3; x:a} > 2.
 *%
 
 % Assignment fact
-&clc{1} =: x.
-&clc{z} =: y.
+&sus{1} =: x.
+&sus{z} =: y.
 
 %*
 % Conditional assignment fact
 
 {a}.
-&clc{z : a; 1} =: x.
-&clc{x} =: y.
+&sus{z : a; 1} =: x.
+&sus{x} =: y.
 
 #show __def/1.
 
 % Assignment head, body check
 {a}.
-&clc{1} =: x :- a.
-b :- &clc{x} > 0.
+&sus{1} =: x :- a.
+b :- &sus{x} > 0.
 
 % In assignment
 &in{0..2} =: x.
@@ -39,35 +39,35 @@ b :- &clc{x} > 0.
 
 % In assignment, vars def, unsat
 
-&clc{z} = 1.
-&clc{y} = 2.
+&sus{z} = 1.
+&sus{y} = 2.
 &in{y..z} =: x.
 
 % In assignment, vars def, sat
-&clc{z} = 2.
-&clc{y} = 1.
+&sus{z} = 2.
+&sus{y} = 1.
 &in{y..z} =: x.
 
 % In assignment, vars def conditional, sat
 {a}.
-&clc{z} = 2 :- a.
-&clc{y} = 1.
+&sus{z} = 2 :- a.
+&sus{y} = 1.
 &in{y..z} =: x.
 
 % Conditional linear constraint, head
 {a}.
-&clc{1:a} = x.
+&sus{1:a} = x.
 
 % Conditional linear constraint, body
 {a}.
-&clc{1} = x.
-b :- &clc{1:a} < x.
+&sus{1} = x.
+b :- &sus{1:a} < x.
 
 % Minimum assignment fact
 &min{3;2;1}=:x.
 
 % Minimum body
-&clc{x} = 1.
+&sus{x} = 1.
 a :- &min{3;x} < 2.
 
 % Conditional minimum assignment fact
@@ -76,14 +76,14 @@ a :- &min{3;x} < 2.
 
 % Conditional minimum body
 {b}.
-&clc{x} = 1.
+&sus{x} = 1.
 a :- &min{3; x:b} < 2.
 
 % Maximum assignment fact
 &max{3;2;1}=:x.
 
 % Maximum body
-&clc{x} = 3.
+&sus{x} = 3.
 a :- &max{1;x} > 2.
 
 % Conditional maximum assignment fact
@@ -92,7 +92,7 @@ a :- &max{1;x} > 2.
 
 % Conditional maximum body
 {b}.
-&clc{x} = 2.
+&sus{x} = 2.
 a :- &max{1; x:b} <= 1.
 
 *%
