@@ -134,3 +134,17 @@ class HeadBodyTransformer(ast.Transformer):
                 elements=self._rewrite_tuples(atom.elements),
             )
         return atom
+
+    def visit_Rule(self,rule):
+        head = rule.head
+        if head.ast_type == ast.ASTType.TheoryAtom:
+            for element in head.elements:
+                term = element.terms[0]
+                condition = element.condition
+                if term.ast_type == ast.ASTType.TheoryUnparsedTerm and "::" in str(term):
+                    unparsed_terms = term.elements[:-1]
+                    choice_literal = term.elements[-1].term
+                    assert "::" == term.elements[-1].operators[0] and choice_literal.ast_type == ast.ASTType.TheoryFunction
+                    print(unparsed_terms)
+                    print(choice_literal)
+        return rule
