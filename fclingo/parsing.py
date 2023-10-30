@@ -149,8 +149,11 @@ class HeadBodyTransformer(ast.Transformer):
                 if term.ast_type == ast.ASTType.TheoryUnparsedTerm and "::" in str(term):
                     unparsed_terms = term.elements[:-1]
                     choice_atom = term.elements[-1].term
-                    assert "::" == term.elements[-1].operators[0] and choice_atom.ast_type == ast.ASTType.TheoryFunction and len(element.terms) == 1
-                    choice_atom = ast.Literal(location,0,ast.SymbolicAtom(ast.Function(location,choice_atom.name,choice_atom.arguments,0)))
+                    assert "::" == term.elements[-1].operators[0] and choice_atom.ast_type in [ast.ASTType.TheoryFunction, ast.ASTType.SymbolicTerm] and len(element.terms) == 1
+                    if choice_atom.ast_type == ast.ASTType.TheoryFunction:
+                        choice_atom = ast.Literal(location,0,ast.SymbolicAtom(ast.Function(location,choice_atom.name,choice_atom.arguments,0)))
+                    else:
+                        choice_atom = ast.Literal(location,0,ast.SymbolicAtom(choice_atom))
                     choice = ast.Aggregate(location, None, [ast.ConditionalLiteral(location,choice_atom,[])], None)                    
                     body = []
                     body.extend(rule.body)

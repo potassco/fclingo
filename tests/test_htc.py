@@ -620,6 +620,156 @@ class TestMain(unittest.TestCase):
             ],
         )
 
+    def test_choice_sum(self):
+        self.assertEqual(
+            solve(
+                """\
+            &sum{ 4 :: a } = 4.
+            """,
+                -10,
+                10,
+            ),
+            [["a"]],
+        )
+        self.assertEqual(
+            solve(
+                """\
+            &sum{ x :: a } = 4.
+            """,
+                -10,
+                10,
+            ),
+            [['a', ('x', 4)]],
+        )
+        self.assertEqual(
+            solve(
+                """\
+            &sum{ x } = 2.
+            &sum{ x :: a } = 4.
+            """,
+                -10,
+                10,
+            ),
+            [],
+        )
+        self.assertEqual(
+            solve(
+                """\
+            &sum{ x :: a ; y :: b ; 2} = 4.
+            """,
+                -2,
+                2,
+            ),
+            [['a', ('x', 2), ('y', 0)], ['a', 'b', ('x', 0), ('y', 2)], ['a', 'b', ('x', 0), ('y', 2)], ['a', 'b', ('x', 1), ('y', 1)], ['a', 'b', ('x', 2), ('y', 0)], ['a', 'b', ('x', 2), ('y', 0)], ['b', ('x', 0), ('y', 2)]],
+        )
+        self.assertEqual(
+            solve(
+                """\
+            &sum{ 2*x-12 :: a } = 4.
+            """,
+                -10,
+                10,
+            ),
+            [['a', ('x', 8)]],
+        )
+        self.assertEqual(
+            solve(
+                """\
+            r(1). {r(2)}.
+            &sum{ x(P) :: a(P) : r(P) } = 4.
+            """,
+                -2,
+                2,
+            ),
+            [['a(1)', 'a(2)', 'r(1)', 'r(2)', ('x(1)', 2), ('x(2)', 2)]],
+        )
+        self.assertEqual(
+            solve(
+                """\
+            r(1). {r(2)}.
+            &sum{ x(P) :: a(P) : r(P) } = 4 :- r(P).
+            """,
+                -4,
+                4,
+            ),
+            [['a(1)', 'a(2)', 'r(1)', 'r(2)', ('x(1)', 4), ('x(2)', 4)], ['a(1)', 'r(1)', ('x(1)', 4), ('x(2)', 0)]],
+        )
+
+    def test_choice_sus(self):
+        self.assertEqual(
+            solve(
+                """\
+            &sus{ 4 :: a } = 4.
+            """,
+                -10,
+                10,
+            ),
+            [["a"]],
+        )
+        self.assertEqual(
+            solve(
+                """\
+            &sus{ x :: a } = 4.
+            """,
+                -10,
+                10,
+            ),
+            [['a', ('x', 4)]],
+        )
+        self.assertEqual(
+            solve(
+                """\
+            &sus{ x } = 2.
+            &sus{ x :: a } = 4.
+            """,
+                -10,
+                10,
+            ),
+            [],
+        )
+        self.assertEqual(
+            solve(
+                """\
+            &sus{ x :: a ; y :: b ; 2} = 4.
+            """,
+                -2,
+                2,
+            ),
+            [['a', ('x', 2), ('y', 0)], ['a', 'b', ('x', 0), ('y', 2)], ['a', 'b', ('x', 1), ('y', 1)], ['a', 'b', ('x', 2), ('y', 0)], ['b', ('x', 0), ('y', 2)]],
+        )
+        self.assertEqual(
+            solve(
+                """\
+            &sus{ 2*x-12 :: a } = 4.
+            """,
+                -10,
+                10,
+            ),
+            [['a', ('x', 8)]],
+        )
+        self.assertEqual(
+            solve(
+                """\
+            r(1). {r(2)}.
+            &sus{ x(P) :: a(P) : r(P) } = 4.
+            """,
+                -2,
+                2,
+            ),
+            [['a(1)', 'a(2)', 'r(1)', 'r(2)', ('x(1)', 2), ('x(2)', 2)]],
+        )
+        self.assertEqual(
+            solve(
+                """\
+            r(1). {r(2)}.
+            &sus{ x(P) :: a(P) : r(P) } = 4 :- r(P).
+            """,
+                -4,
+                4,
+            ),
+            [['a(1)', 'a(2)', 'r(1)', 'r(2)', ('x(1)', 4), ('x(2)', 4)], ['a(1)', 'r(1)', ('x(1)', 4), ('x(2)', 0)]],
+        )
+
     def test_taxes(self):
         answers = solve(
             """\
