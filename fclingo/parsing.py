@@ -44,7 +44,7 @@ THEORY = (
     + PREFIX
     + """sus"""
     + BODY
-    + """/0 : sum_term, {<=,=,!=,<,>,>=,=:}, sum_term, body;
+    + """/0 : sum_term, {<=,=,!=,<,>,>=}, sum_term, body;
     &"""
     + PREFIX
     + """sus"""
@@ -54,7 +54,7 @@ THEORY = (
     + PREFIX
     + """max"""
     + BODY
-    + """/0 : sum_term, {<=,=,!=,<,>,>=,=:}, sum_term, body;
+    + """/0 : sum_term, {<=,=,!=,<,>,>=}, sum_term, body;
     &"""
     + PREFIX
     + """max"""
@@ -64,7 +64,7 @@ THEORY = (
     + PREFIX
     + """min"""
     + BODY
-    + """/0 : sum_term, {<=,=,!=,<,>,>=,=:}, sum_term, body;
+    + """/0 : sum_term, {<=,=,!=,<,>,>=}, sum_term, body;
     &"""
     + PREFIX
     + """min"""

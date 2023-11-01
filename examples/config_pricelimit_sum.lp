@@ -5,7 +5,7 @@ pricelimit(14).
   selected(standardframe).
 { selected(saddlebag) }.
 
-&sus{price(P)} = V :- selected(P), price(P,V).
+&sum{price(P)} = V :- selected(P), price(P,V).
 :- &sum { price(P) : selected(P)  } >= L,
    pricelimit(L).
 
