@@ -6,11 +6,11 @@ default_price(20).
 { selected(saddlebag) }.
 
 &sus{price(P)} = V    :- selected(P), price(P,V).
-&sus{price(P) : selected(P)} =: calculated_price(total).
+&sus{price(P) : selected(P)} =: calc_price(total).
 
-&sus{price(total)} = calculated_price(total) :- &df{calculated_price(total)}.
-&sus{price(total)} = D                   :- not &df{calculated_price(total)},
-                                            default_price(D).
+&sus{price(total)} = calc_price(total) :- &df{calc_price(total)}.
+&sus{price(total)} = D                 :- not &df{calc_price(total)},
+                                          default_price(D).
 
 #show selected/1.
 &show{price/1}.

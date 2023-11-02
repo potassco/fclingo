@@ -17,8 +17,9 @@ Atoms representing the constraints may have the following form:
 1. `&sus{lt1 : c1;...;ltn : cn} <> l0` 
 2. `&sum{lt1 : c1;...;ltn : cn} <> l0`
 3. `&in{lb..ub} =: x`
-4. `&max{lt1 : c1;...;ltn : cn} <> l0`
-4. `&min{lt1 : c1;...;ltn : cn} <> l0`
+4. `&df{x}`
+5. `&max{lt1 : c1;...;ltn : cn} <> l0`
+6. `&min{lt1 : c1;...;ltn : cn} <> l0`
 
 where `lti`, `lb`, and `ub` are linear terms,
 `ci` is either a conjunction of literals for `i` between 0 and `n`, `x` is the name of a variable and `<>` is either `<=`,`=`,`!=`,`<`,`>`, or `>=`.
@@ -119,9 +120,85 @@ returns
 UNSATISFIABLE
 ```
 because the undefined variable for the price of the saddlebag is removed, we can detect that the limit is reached, even when it is selected.
+
+### 3. Assignments
+
+The atom in 3. is a directional assignment of a value between linear term `lb` and `ub` to the variable `x`. It may only be used in the head of a rule. Only if `lb` and `ub` are defined, `x` will receive a value in between the `lb` and `ub`. Note that this is different from using linear constraints to assign a value. For instance, the fact `&sus{y}=x.` would allow `y` as well as `x` to be defined and take on arbitrary values such that `x` and `y` are equal, while `&in{y..y}=:x.` requires some other rule to define `y` and if that is not the case, `x` remains undefined. If no range is required, one can also use the strict sum and write `&sus{lt}:=x`, where `lt` is a linear term and `x` an integer variable.
+
+For instance take program:
+```
+price(standardframe,15).
+default_range(1,2).
+
+  selected(standardframe).
+{ selected(saddlebag) }.
+
+&sus{price(P)} = V    :- selected(P), price(P,V).
+&in{L..U} =: price(P) :- selected(P), not price(P,_), 
+                         default_range(L,U).
+&sus{price(P) : selected(P)} =: price(total).
+
+#show selected/1.
+&show{price/1}.
+```
+
+Here, we assign selected parts that are missing the price information a default within a certain range. Calling 
+
+```
+fclingo examples/config_default_in.lp 0
+```
+results in
+```
+Answer: 1
+selected(standardframe) val(price(total),15) val(price(standardframe),15)
+Answer: 2
+selected(standardframe) selected(saddlebag) val(price(total),16) val(price(standardframe),15) val(price(saddlebag),1)
+Answer: 3
+selected(standardframe) selected(saddlebag) val(price(total),17) val(price(standardframe),15) val(price(saddlebag),2)
+```
+were in answers 2 and 3, the two possible defaults for the missing price information of the selected saddlebag is used.
+
+### 4. Defined
+
+The atom in 4. may be used in the body to reason about whether a given variable `x` is defined or not. This is useful for instance to provide defaults or detect errors if a certain variable does not have a value but should.
+
+For instance, program
+```
+price(standardframe,15).
+
+default_price(20).
+
+  selected(standardframe).
+{ selected(saddlebag) }.
+
+&sus{price(P)} = V    :- selected(P), price(P,V).
+&sus{price(P) : selected(P)} =: calc_price(total).
+
+&sus{price(total)} = calc_price(total) :- &df{calc_price(total)}.
+&sus{price(total)} = D                 :- not &df{calc_price(total)},
+                                          default_price(D).
+
+#show selected/1.
+&show{price/1}.
+```
+first tries to calculate the price, and if this calculation has a defined outcome, it is assigned to the total price. If not, a default price is used.
+
+Calling
+```
+fclingo examples/config_default_in.lp 0
+```
+yields the intended two answer sets
+```
+Answer: 1
+selected(standardframe) selected(saddlebag) val(price(standardframe),15) val(price(total),20)
+Answer: 2
+selected(standardframe) val(price(standardframe),15) val(price(total),15)
+```
+where Answer 1 makes use of the default because the price of the saddlebag is missing and therefore the total price may not be calculated.
+
 ## Development
 
-To improve code quality, we run linters, type checkers, and unit tests. The
+To improve code quality, we run linters, and unit tests. The
 tools can be run using [nox]. We recommend installing nox using [pipx] to have
 it available globally:
 
@@ -139,17 +216,6 @@ time, you can use
 ```bash
 nox --no-install -rs test
 ```
-
-Furthermore, we auto format code using [black]. We provide a [pre-commit][pre]
-config to automate this process. It can be set up using the following commands:
-
-```bash
-python -m pipx install pre-commit
-pre-commit install
-```
-
-This blackens the source code whenever `git commit` is used.
-
 There is also a format session for nox. It can be run as follows:
 
 ```bash
@@ -162,5 +228,3 @@ The latter command can be used to inspect changes before applying them.
 [doc]: https://potassco.org/clingo/python-api/current/
 [nox]: https://nox.thea.codes/en/stable/index.html
 [pipx]: https://pypa.github.io/pipx/
-[pre]: https://pre-commit.com/
-[black]: https://black.readthedocs.io/en/stable/
