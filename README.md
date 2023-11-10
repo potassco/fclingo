@@ -10,10 +10,19 @@ pip install . -r requirements.txt
 
 ## Usage
 
-fclingo accepts as input [clingo](https://github.com/potassco/clingo) rules enriched with founded conditional linear constraints. It relies on the constraint answer set programming (CASP) solver [clingcon](https://github.com/potassco/clingo) into whose language a fclingo program is translated. fclingo's two main advantages are foundedness of the integer variables and aggregates over integer variables. The former allows variables to be undefined and only assume a value if a reason for that value can be derived. This differs to the behavior of CASP, where variables are always defined and in absence of any constraint to a variable, all possible values are enumerated. The latter generalizes ASP aggregates to contain integer variables that are not subject to grounding.
-The answer sets to fclingo programs contain atoms `val(x,v)`, where `x` is a variable occurring in the program and `v` is the integer value of the variable in the answer set. The absence of such an atom means the variable is undefined.
+fclingo is a solver for Answer Set Programming (ASP) combined with founded conditional linear constraints. These constraints enable the user to use integer variables that are not subject to grounding. Integer variables may be undefined and, in line with the philosophy of ASP, there needs to be a justification in the logic program if a variable receives a value in an answer set. Conditionality allows for a generalization of aggregates commonly used in ASP.
 
-Atoms representing the constraints may have the following form:
+### Relation to clingo
+fclingo is an extension of [clingo](https://github.com/potassco/clingo) and accepts as input clingo rules enriched with founded conditional linear constraints. 
+
+### Relation to clingcon
+fclingo relies on the constraint answer set programming (CASP) solver [clingcon](https://github.com/potassco/clingo) into whose language a fclingo program is translated. fclingo's two main advantages are foundedness of the integer variables and aggregates over integer variables. The former allows variables to be undefined and only assume a value if a reason for that value can be derived. This differs to the behavior of CASP, where variables are always defined and in absence of any constraint to a variable, all possible values are enumerated. The latter generalizes ASP aggregates to contain integer variables that are not subject to grounding.
+
+### Assignments
+The answer sets of fclingo programs contain atoms `val(x,v)`, where `x` is a integer variable occurring in the program and `v` is the integer value of the variable in the answer set. The absence of such an atom means the variable is undefined.
+
+### Language overview
+fclingo atoms have the following form:
 1. `&sum{lt1 : c1;...;ltn : cn} <> l0`
 2. `&sus{lt1 : c1;...;ltn : cn} <> l0` 
 3. `&in{lb..ub} =: x`
@@ -31,11 +40,11 @@ The atom in 1. sums up all linear terms in the set. It can be seen as a generali
 
 For example,
 ```
-price(standardframe,15).
-price(saddlebag,5).
+price(frame,15).
+price(bag,5).
 
-  selected(standardframe).
-{ selected(saddlebag) }.
+  selected(frame).
+{ selected(bag) }.
 
 &sum{price(P)} = V :- selected(P), price(P,V).
 &sum{price(P) : selected(P)} = price(total).
@@ -43,7 +52,7 @@ price(saddlebag,5).
 #show selected/1.
 &show{price/1}.
 ```
-This program configures a bike with a standard frame that has an optional saddlebag. For both the standard frame and the optional saddlebag prices are provided, stored in integer variables and then summed up to get the total price.
+This program configures a bike with a frame that has an optional bag. For both the frame and the optional bag prices are provided, stored in integer variables and then summed up to get the total price.
 
 Executing 
 ```shell
@@ -52,20 +61,20 @@ fclingo examples/config_optional.lp
 yields the answer sets
 ```
 Answer: 1
-selected(standardframe) val(price(total),15) val(price(standardframe),15)
+selected(frame) val(price(total),15) val(price(frame),15)
 Answer: 2
-selected(standardframe) selected(saddlebag) val(price(saddlebag),5) val(price(total),20) val(price(standardframe),15)
+selected(frame) selected(bag) val(price(bag),5) val(price(total),20) val(price(frame),15)
 ```
-As expected, we have two answer sets. The first does not select the optional saddlebag and calculates the total price as 15, same as the price of the standard frame. The second selects the saddlebag and increases the total price to 20.
+As expected, we have two answer sets. The first does not select the optional bag and calculates the total price as 15, same as the price of the frame. The second selects the bag and increases the total price to 20.
 
-To see the behavior in presence of undefined variables, consider following example
+To see the behavior in presence of undefined integer variables, consider following example
 ```
-price(standardframe,15).
+price(frame,15).
 
 pricelimit(14).
 
-  selected(standardframe).
-{ selected(saddlebag) }.
+  selected(frame).
+{ selected(bag) }.
 
 &sum{price(P)} = V :- selected(P), price(P,V).
 :- &sum { price(P) : selected(P)  } >= L,
@@ -74,7 +83,7 @@ pricelimit(14).
 #show selected/1.
 &show{price/1}.
 ```
-Now, the price of the saddlebag is omitted and instead of calculating the total price, we restrict the sum over the individual prices to be 14.
+Now, the price of the bag is omitted and instead of calculating the total price, we restrict the sum over the individual prices to be 14.
 The call
 ```
 fclingo examples/config_pricelimit_sum.lp 0
@@ -83,22 +92,22 @@ returns
 ```
 UNSATISFIABLE
 ```
-Even if the price for the saddlebag is undefined, the constraint detects that the price limit is breached since the undefined variable is removed from the set.
+Even if the price for the bag is undefined, the constraint detects that the price limit is breached since the undefined integer variable is removed from the set.
 
 ### 2. Sum under strict semantics
 
-The atom in 2. sums up the linear terms for the conditions that are true. In contrast to 1., if any of the terms is undefined, resulting from a variable being undefined that is contained within, the sum is undefined as well. This results in the atom being false. The atom may be used in the head or in the body.
+The atom in 2. sums up the linear terms for the conditions that are true. In contrast to 1., if any of the terms is undefined, resulting from an integer variable being undefined that is contained within, the sum is undefined as well. This results in the atom being false. We will later elaborate how this version of sum is useful for assignments later in this document. The atom may be used in the head or in the body.
 
 The example `examples/config_optional.lp` behaves identically when we replace `sus` with `sum`.
 
 Different behavior arises for the price limit.
 ```
-price(standardframe,15).
+price(frame,15).
 
 pricelimit(14).
 
-  selected(standardframe).
-{ selected(saddlebag) }.
+  selected(frame).
+{ selected(bag) }.
 
 &sus{price(P)} = V :- selected(P), price(P,V).
 :- &sus { price(P) : selected(P)  } >= L,
@@ -115,22 +124,23 @@ fclingo examples/config_pricelimit_sus.lp 0
 now returns
 ```
 Answer: 1
-selected(standardframe) selected(saddlebag) val(price(standardframe),15)
+selected(frame) selected(bag) val(price(frame),15)
 ```
-The answer with only the standard frame is removed because its price alone is higher than the limit.
-However, when the saddlebag is selected, its price value is undefined and therefore the sum under strict semantics returns undefined as well and the price limit is disregarded.
+The answer with only the frame is removed because its price alone is higher than the limit.
+However, when the bag is selected, its price value is undefined and therefore the sum under strict semantics returns undefined as well and the price limit is disregarded.
 
 ### 3. Assignments
 
-The atom in 3. is a directional assignment of a value between linear terms `lb` and `ub` to the variable `x`. It may only be used in the head of a rule. Only if `lb` and `ub` are defined, `x` will receive a value in between `lb` and `ub`. Note that this is different from using equality to assign a value. For instance, the fact `&sus{y}=x.` would allow `y` as well as `x` to be defined and take on arbitrary values such that `x` and `y` are equal, while `&in{y..y}=:x.` requires some other rule to define `y` and if that is not the case, `x` remains undefined. If no range is required, one can also use the strict sum and write `&sus{lt}=:x`, where `lt` is a linear term and `x` an integer variable.
+The atom in 3. is a directional assignment of a value between linear terms `lb` and `ub` to the variable `x`. It may only be used in the head of a rule. Only if `lb` and `ub` are defined, `x` will receive a value in between `lb` and `ub`. Note that this is different from using equality to assign a value. For instance, the fact `&sus{y}=x.` would allow `y` as well as `x` to be defined and take on arbitrary values such that `x` and `y` are equal, while `&in{y..y}=:x.` requires some other rule to define `y` and if that is not the case, `x` remains undefined. 
+One can also use the strict sum and write `&sus{lt1 : c1;..;ltn : cn}=:x`, where `lti` are linear terms conditioned by conjuctions `ci` for `i` between 1 and `n`, and `x` is an integer variable. Using the strict sum that way has two advantages: first, the strict sum can be undefined in contrast to the clingo sum and thefore `x` only receives a value if the strict sum can be calculated, and second, the linear terms may be conditioned and the arity of the sum can be arbitrary. 
 
 For instance, take program
 ```
-price(standardframe,15).
+price(frame,15).
 default_range(1,2).
 
-  selected(standardframe).
-{ selected(saddlebag) }.
+  selected(frame).
+{ selected(bag) }.
 
 &sus{price(P)} = V    :- selected(P), price(P,V).
 &in{L..U} =: price(P) :- selected(P), not price(P,_), 
@@ -150,26 +160,26 @@ fclingo examples/config_default_in.lp 0
 results in
 ```
 Answer: 1
-selected(standardframe) val(price(total),15) val(price(standardframe),15)
+selected(frame) val(price(total),15) val(price(frame),15)
 Answer: 2
-selected(standardframe) selected(saddlebag) val(price(total),16) val(price(standardframe),15) val(price(saddlebag),1)
+selected(frame) selected(bag) val(price(total),16) val(price(frame),15) val(price(bag),1)
 Answer: 3
-selected(standardframe) selected(saddlebag) val(price(total),17) val(price(standardframe),15) val(price(saddlebag),2)
+selected(frame) selected(bag) val(price(total),17) val(price(frame),15) val(price(bag),2)
 ```
-were in answers 2 and 3, the two possible defaults for the missing price information of the selected saddlebag is used.
+were in answers 2 and 3, the two possible defaults for the missing price information of the selected bag is used.
 
 ### 4. Defined
 
-The atom in 4. may be used in the body to reason about whether a given variable `x` is defined or not. This is useful for instance to provide defaults or detect errors if a certain variable does not have a value but should.
+The atom in 4. may be used in the body to reason about whether a given variable `x` is defined or not. This is useful for instance to provide defaults or detect errors if a certain integer variable does not have a value but should.
 
 For instance, program
 ```
-price(standardframe,15).
+price(frame,15).
 
 default_price(20).
 
-  selected(standardframe).
-{ selected(saddlebag) }.
+  selected(frame).
+{ selected(bag) }.
 
 &sus{price(P)} = V    :- selected(P), price(P,V).
 &sus{price(P) : selected(P)} =: calc_price(total).
@@ -190,22 +200,22 @@ fclingo examples/config_default_in.lp 0
 yields the intended two answer sets
 ```
 Answer: 1
-selected(standardframe) selected(saddlebag) val(price(standardframe),15) val(price(total),20)
+selected(frame) selected(bag) val(price(frame),15) val(price(total),20)
 Answer: 2
-selected(standardframe) val(price(standardframe),15) val(price(total),15)
+selected(frame) val(price(frame),15) val(price(total),15)
 ```
-where Answer 1 makes use of the default because the price of the saddlebag is missing and therefore the total price may not be calculated.
+where Answer 1 makes use of the default because the price of the bag is missing and therefore the total price may not be calculated.
 
 ### 5./6. Minimum and maximum aggregates
 
 Atoms in 5. and 6. determine the minimum and maximum among linear terms in the set that have a defined value, respectively. They may be used in the head as well as in the body.
 
 ```
-price(standardframe,15). part(standardframe).
-price(saddlebag,5).      part(saddlebag).
+price(frame,15). part(frame).
+price(bag,5).      part(bag).
 
-  selected(standardframe).
-{ selected(saddlebag) }.
+  selected(frame).
+{ selected(bag) }.
 
 &sus{price(P)} = V :- selected(P), price(P,V).
 &sus{price(P) : selected(P)} = price(total).
@@ -229,11 +239,11 @@ fclingo config_minmax_price.lp 0
 yields
 ```
 Answer: 1
-selected(standardframe) min_price(standardframe) max_price(standardframe) val(price(total),15) val(price(standardframe),15)
+selected(frame) min_price(frame) max_price(frame) val(price(total),15) val(price(frame),15)
 Answer: 2
-selected(standardframe) selected(saddlebag) min_price(saddlebag) max_price(standardframe) val(price(total),20) val(price(standardframe),15) val(price(saddlebag),5)
+selected(frame) selected(bag) min_price(bag) max_price(frame) val(price(total),20) val(price(frame),15) val(price(bag),5)
 ```
-When the saddlebag is not selected, the standard frame has the minimum and maximum price. In the second answer, we see that the saddlebag has the minimum price among selected parts, while the standard frame's price is the maximum.
+When the bag is not selected, the frame has the minimum and maximum price. In the second answer, we see that the bag has the minimum price among selected parts, while the frame's price is the maximum.
 
 ### Choices
 Similarly to the language of clingo, fclingo allows for choice rules in the head of a rule. Choices have the following form:
@@ -248,7 +258,7 @@ and `<>` is either `<=`,`=`,`!=`,`<`,`>`, or `>=`.
 As an example program
 ```
 part(sportsframe).    price(sportsframe,15).   type(sportsframe,frame).
-part(standardframe).  price(standardframe,14). type(standardframe,frame).
+part(standardframe).  price(standardframe,14). type(frame,frame).
 part(fancysaddle).    price(fancysaddle,6).    type(fancysaddle,saddle). 
 part(standardsaddle). price(standardsaddle,5). type(standardsaddle,saddle). 
 
@@ -264,7 +274,7 @@ pricelimit(20).
 #show selected/1.
 &show{}.
 ```
-Our parts database for the bike is now more involved. Each part has a price and a type. It contains two choices for the frame, either standard or sports, and two choices for the saddle, either standard or fancy. As before, we store the prices in integer values and we have a price limit. 
+Our parts database for the bike is now more involved. Each part has a price and a type. It contains two choices for the frame, either standard or sports, and two choices for the saddle, either standard or fancy. As before, we store the prices in integer variables and we have a price limit. 
 
 Using a choice, we can now express in one line, that we may freely select parts such that the price limit is respected. We further restrict solutions such that every type has something selected and there is only one option per type selected.
 

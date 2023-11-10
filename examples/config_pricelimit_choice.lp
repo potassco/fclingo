@@ -1,5 +1,5 @@
 part(sportsframe).    price(sportsframe,15).   type(sportsframe,frame).
-part(standardframe).  price(standardframe,14). type(standardframe,frame).
+part(standardframe).  price(standardframe,14). type(frame,frame).
 part(fancysaddle).    price(fancysaddle,6).    type(fancysaddle,saddle). 
 part(standardsaddle). price(standardsaddle,5). type(standardsaddle,saddle). 
 

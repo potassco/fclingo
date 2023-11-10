@@ -1,8 +1,8 @@
-price(standardframe,15). part(standardframe).
-price(saddlebag,5).      part(saddlebag).
+price(frame,15). part(frame).
+price(bag,5).      part(bag).
 
-  selected(standardframe).
-{ selected(saddlebag) }.
+  selected(frame).
+{ selected(bag) }.
 
 &sus{price(P)} = V :- selected(P), price(P,V).
 &sus{price(P) : selected(P)} = price(total).

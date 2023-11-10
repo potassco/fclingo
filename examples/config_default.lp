@@ -1,7 +1,7 @@
-price(standardframe,15).
+price(frame,15).
 
-  selected(standardframe).
-{ selected(saddlebag) }.
+  selected(frame).
+{ selected(bag) }.
 
 &sus{price(P)} = V :- selected(P), price(P,V).
 &sus{price(P)} = 1 :- selected(P), not price(P,_).

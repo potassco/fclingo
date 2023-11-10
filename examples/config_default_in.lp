@@ -1,8 +1,8 @@
-price(standardframe,15).
+price(frame,15).
 default_range(1,2).
 
-  selected(standardframe).
-{ selected(saddlebag) }.
+  selected(frame).
+{ selected(bag) }.
 
 &sus{price(P)} = V    :- selected(P), price(P,V).
 &in{L..U} =: price(P) :- selected(P), not price(P,_), 
