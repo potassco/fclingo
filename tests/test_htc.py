@@ -199,7 +199,7 @@ class TestMain(unittest.TestCase):
         self.assertEqual(
             solve(
                 """\
-            &fsum{x((),y)}=4.""",
+            &sus{x((),y)}=4.""",
                 -10,
                 10,
             ),
@@ -208,7 +208,7 @@ class TestMain(unittest.TestCase):
         self.assertEqual(
             solve(
                 """\
-            &fsum{4}=x(y,()).""",
+            &sus{4}=x(y,()).""",
                 -10,
                 10,
             ),
@@ -238,7 +238,7 @@ class TestMain(unittest.TestCase):
             solve(
                 """\
             b :- &df{x}.
-            &fsum{x} = 0.""",
+            &sus{x} = 0.""",
                 -10,
                 10,
             ),
@@ -248,7 +248,7 @@ class TestMain(unittest.TestCase):
             solve(
                 """\
             b :- &df{x}.
-            &fsum{y} =: x.""",
+            &sus{y} =: x.""",
                 -10,
                 10,
             ),
@@ -258,8 +258,8 @@ class TestMain(unittest.TestCase):
             solve(
                 """\
             b :- &df{x}.
-            &fsum{y} =: x.
-            &fsum{y} = 2.""",
+            &sus{y} =: x.
+            &sus{y} = 2.""",
                 -10,
                 10,
             ),
@@ -270,7 +270,7 @@ class TestMain(unittest.TestCase):
         self.assertEqual(
             solve(
                 """\
-            &fsum{1;1}=2.""",
+            &sus{1;1}=2.""",
                 -10,
                 10,
             ),
@@ -279,7 +279,7 @@ class TestMain(unittest.TestCase):
         self.assertEqual(
             solve(
                 """\
-            &fsum{N:N=1..2; M:M=2..3} = 8.""",
+            &sus{N:N=1..2; M:M=2..3} = 8.""",
                 -10,
                 10,
             ),
@@ -288,7 +288,7 @@ class TestMain(unittest.TestCase):
         self.assertEqual(
             solve(
                 """\
-            &fsum{x;x} = 2*x.""",
+            &sus{x;x} = 2*x.""",
                 2,
                 2,
             ),
@@ -297,7 +297,7 @@ class TestMain(unittest.TestCase):
         self.assertEqual(
             solve(
                 """\
-            &fsum{x(N):N=1..2;x(M):M=2..3} = x(1)+2*x(2)+x(3).""",
+            &sus{x(N):N=1..2;x(M):M=2..3} = x(1)+2*x(2)+x(3).""",
                 2,
                 2,
             ),
@@ -309,7 +309,7 @@ class TestMain(unittest.TestCase):
             solve(
                 """\
             {a}.
-            &fsum{1:a} = x.
+            &sus{1:a} = x.
             """,
                 -10,
                 10,
@@ -320,8 +320,8 @@ class TestMain(unittest.TestCase):
             solve(
                 """\
             {a}.
-            &fsum{1} = x.
-            b :- &fsum{1:a} < x.
+            &sus{1} = x.
+            b :- &sus{1:a} < x.
             """,
                 -10,
                 10,
@@ -331,8 +331,8 @@ class TestMain(unittest.TestCase):
         self.assertEqual(
             solve(
                 """\
-            &fsum{x}=1 :- &fsum{ 1 : a }>= 0.
-            a :- &fsum{x}=1.
+            &sus{x}=1 :- &sus{ 1 : a }>= 0.
+            a :- &sus{x}=1.
             """,
                 -10,
                 10,
@@ -343,7 +343,7 @@ class TestMain(unittest.TestCase):
             solve(
                 """\
                       {a;b}.
-            &fsum{1:a,b;2:a;3:b} = x.
+            &sus{1:a,b;2:a;3:b} = x.
             """,
                 -10,
                 10,
@@ -354,7 +354,7 @@ class TestMain(unittest.TestCase):
             solve(
                 """\
             {a;b}.
-            &fsum{1:a,b} = x.
+            &sus{1:a,b} = x.
             """,
                 -10,
                 10,
@@ -364,7 +364,7 @@ class TestMain(unittest.TestCase):
         self.assertEqual(
             solve(
                 """\
-            b :- &fsum{ v : not b } >= 1.
+            b :- &sus{ v : not b } >= 1.
             """,
                 -10,
                 10,
@@ -375,7 +375,7 @@ class TestMain(unittest.TestCase):
             solve(
                 """\
             {a;b}.
-            &fsum{1:a, not b} = x.
+            &sus{1:a, not b} = x.
             """,
                 -10,
                 10,
@@ -387,8 +387,8 @@ class TestMain(unittest.TestCase):
         self.assertEqual(
             solve(
                 """\
-            &fsum{1} =: x.
-            &fsum{z} =: y.
+            &sus{1} =: x.
+            &sus{z} =: y.
             """,
                 -10,
                 10,
@@ -399,8 +399,8 @@ class TestMain(unittest.TestCase):
             solve(
                 """\
             {a}.
-            &fsum{z : a; 1} =: x.
-            &fsum{x} =: y.
+            &sus{z : a; 1} =: x.
+            &sus{x} =: y.
             """,
                 -10,
                 10,
@@ -411,8 +411,8 @@ class TestMain(unittest.TestCase):
             solve(
                 """\
             {a}.
-            &fsum{1} =: x :- a.
-            b :- &fsum{x} > 0.
+            &sus{1} =: x :- a.
+            b :- &sus{x} > 0.
             """,
                 -10,
                 10,
@@ -422,7 +422,7 @@ class TestMain(unittest.TestCase):
         self.assertEqual(
             solve(
                 """\
-            &fin{0..2} =: x.
+            &in{0..2} =: x.
             """,
                 -10,
                 10,
@@ -432,7 +432,7 @@ class TestMain(unittest.TestCase):
         self.assertEqual(
             solve(
                 """\
-            &fin{y..z} =: x.
+            &in{y..z} =: x.
             """,
                 -10,
                 10,
@@ -442,9 +442,9 @@ class TestMain(unittest.TestCase):
         self.assertEqual(
             solve(
                 """\
-            &fsum{z} = 1.
-            &fsum{y} = 2.
-            &fin{y..z} =: x.
+            &sus{z} = 1.
+            &sus{y} = 2.
+            &in{y..z} =: x.
             """,
                 -10,
                 10,
@@ -454,9 +454,9 @@ class TestMain(unittest.TestCase):
         self.assertEqual(
             solve(
                 """\
-            &fsum{z} = 2.
-            &fsum{y} = 1.
-            &fin{y..z} =: x.
+            &sus{z} = 2.
+            &sus{y} = 1.
+            &in{y..z} =: x.
             """,
                 -10,
                 10,
@@ -470,9 +470,9 @@ class TestMain(unittest.TestCase):
             solve(
                 """\
             {a}.
-            &fsum{z} = 2 :- a.
-            &fsum{y} = 1.
-            &fin{y..z} =: x.
+            &sus{z} = 2 :- a.
+            &sus{y} = 1.
+            &in{y..z} =: x.
             """,
                 -10,
                 10,
@@ -488,7 +488,7 @@ class TestMain(unittest.TestCase):
         self.assertEqual(
             solve(
                 """\
-            &fmin{3;2;1}=:x.
+            &min{3;2;1}=:x.
             """,
                 -10,
                 10,
@@ -498,8 +498,8 @@ class TestMain(unittest.TestCase):
         self.assertEqual(
             solve(
                 """\
-            &fsum{x} = 1.
-            a :- &fmin{3;x} < 2.
+            &sus{x} = 1.
+            a :- &min{3;x} < 2.
             """,
                 -10,
                 10,
@@ -510,7 +510,7 @@ class TestMain(unittest.TestCase):
             solve(
                 """\
             {a}.
-            &fmin{3;2;1:a}=:x.
+            &min{3;2;1:a}=:x.
             """,
                 -10,
                 10,
@@ -529,8 +529,8 @@ class TestMain(unittest.TestCase):
             solve(
                 """\
             {b}.
-            &fsum{x} = 1.
-            a :- &fmin{3; x:b} < 2.
+            &sus{x} = 1.
+            a :- &min{3; x:b} < 2.
             """,
                 -10,
                 10,
@@ -549,7 +549,7 @@ class TestMain(unittest.TestCase):
         self.assertEqual(
             solve(
                 """\
-            a :- &fmin{1:a} > 0.
+            a :- &min{1:a} > 0.
             """,
                 -10,
                 10,
@@ -561,7 +561,7 @@ class TestMain(unittest.TestCase):
         self.assertEqual(
             solve(
                 """\
-            &fmax{3;2;1}=:x.
+            &max{3;2;1}=:x.
             """,
                 -10,
                 10,
@@ -571,8 +571,8 @@ class TestMain(unittest.TestCase):
         self.assertEqual(
             solve(
                 """\
-            &fsum{x} = 3.
-            a :- &fmax{1;x} > 2.
+            &sus{x} = 3.
+            a :- &max{1;x} > 2.
             """,
                 -10,
                 10,
@@ -583,7 +583,7 @@ class TestMain(unittest.TestCase):
             solve(
                 """\
             {a}.
-            &fmax{3;2;4:a}=:x.
+            &max{3;2;4:a}=:x.
             """,
                 -10,
                 10,
@@ -602,8 +602,8 @@ class TestMain(unittest.TestCase):
             solve(
                 """\
             {b}.
-            &fsum{x} = 2.
-            a :- &fmax{1; x:b} <= 1.
+            &sus{x} = 2.
+            a :- &max{1; x:b} <= 1.
             """,
                 -10,
                 10,
@@ -618,6 +618,156 @@ class TestMain(unittest.TestCase):
                     ("x", 2),
                 ],
             ],
+        )
+
+    def test_choice_sum(self):
+        self.assertEqual(
+            solve(
+                """\
+            &sum{ 4 :: a } = 4.
+            """,
+                -10,
+                10,
+            ),
+            [["a"]],
+        )
+        self.assertEqual(
+            solve(
+                """\
+            &sum{ x :: a } = 4.
+            """,
+                -10,
+                10,
+            ),
+            [['a', ('x', 4)]],
+        )
+        self.assertEqual(
+            solve(
+                """\
+            &sum{ x } = 2.
+            &sum{ x :: a } = 4.
+            """,
+                -10,
+                10,
+            ),
+            [],
+        )
+        self.assertEqual(
+            solve(
+                """\
+            &sum{ x :: a ; y :: b ; 2} = 4.
+            """,
+                -2,
+                2,
+            ),
+            [['a', ('x', 2), ('y', 0)], ['a', 'b', ('x', 0), ('y', 2)], ['a', 'b', ('x', 0), ('y', 2)], ['a', 'b', ('x', 1), ('y', 1)], ['a', 'b', ('x', 2), ('y', 0)], ['a', 'b', ('x', 2), ('y', 0)], ['b', ('x', 0), ('y', 2)]],
+        )
+        self.assertEqual(
+            solve(
+                """\
+            &sum{ 2*x-12 :: a } = 4.
+            """,
+                -10,
+                10,
+            ),
+            [['a', ('x', 8)]],
+        )
+        self.assertEqual(
+            solve(
+                """\
+            r(1). {r(2)}.
+            &sum{ x(P) :: a(P) : r(P) } = 4.
+            """,
+                -2,
+                2,
+            ),
+            [['a(1)', 'a(2)', 'r(1)', 'r(2)', ('x(1)', 2), ('x(2)', 2)]],
+        )
+        self.assertEqual(
+            solve(
+                """\
+            r(1). {r(2)}.
+            &sum{ x(P) :: a(P) : r(P) } = 4 :- r(P).
+            """,
+                -4,
+                4,
+            ),
+            [['a(1)', 'a(2)', 'r(1)', 'r(2)', ('x(1)', 4), ('x(2)', 4)], ['a(1)', 'r(1)', ('x(1)', 4), ('x(2)', 0)]],
+        )
+
+    def test_choice_sus(self):
+        self.assertEqual(
+            solve(
+                """\
+            &sus{ 4 :: a } = 4.
+            """,
+                -10,
+                10,
+            ),
+            [["a"]],
+        )
+        self.assertEqual(
+            solve(
+                """\
+            &sus{ x :: a } = 4.
+            """,
+                -10,
+                10,
+            ),
+            [['a', ('x', 4)]],
+        )
+        self.assertEqual(
+            solve(
+                """\
+            &sus{ x } = 2.
+            &sus{ x :: a } = 4.
+            """,
+                -10,
+                10,
+            ),
+            [],
+        )
+        self.assertEqual(
+            solve(
+                """\
+            &sus{ x :: a ; y :: b ; 2} = 4.
+            """,
+                -2,
+                2,
+            ),
+            [['a', ('x', 2), ('y', 0)], ['a', 'b', ('x', 0), ('y', 2)], ['a', 'b', ('x', 1), ('y', 1)], ['a', 'b', ('x', 2), ('y', 0)], ['b', ('x', 0), ('y', 2)]],
+        )
+        self.assertEqual(
+            solve(
+                """\
+            &sus{ 2*x-12 :: a } = 4.
+            """,
+                -10,
+                10,
+            ),
+            [['a', ('x', 8)]],
+        )
+        self.assertEqual(
+            solve(
+                """\
+            r(1). {r(2)}.
+            &sus{ x(P) :: a(P) : r(P) } = 4.
+            """,
+                -2,
+                2,
+            ),
+            [['a(1)', 'a(2)', 'r(1)', 'r(2)', ('x(1)', 2), ('x(2)', 2)]],
+        )
+        self.assertEqual(
+            solve(
+                """\
+            r(1). {r(2)}.
+            &sus{ x(P) :: a(P) : r(P) } = 4 :- r(P).
+            """,
+                -4,
+                4,
+            ),
+            [['a(1)', 'a(2)', 'r(1)', 'r(2)', ('x(1)', 4), ('x(2)', 4)], ['a(1)', 'r(1)', ('x(1)', 4), ('x(2)', 0)]],
         )
 
     def test_taxes(self):
@@ -637,17 +787,17 @@ class TestMain(unittest.TestCase):
 
             1 { lives(P,R) : region(R) } 1 :- person(P).
 
-            &fsum{ 0 } =: deduction(P) :- person(P), not deduction(P,_,_).
-            &fin{ L..H } =: deduction(P) :- deduction(P,L,H).
-            &fsum{ T } =: rate(P) :- lives(P,R), income(P,I),
+            &sus{ 0 } =: deduction(P) :- person(P), not deduction(P,_,_).
+            &in{ L..H } =: deduction(P) :- deduction(P,L,H).
+            &sus{ T } =: rate(P) :- lives(P,R), income(P,I),
                                     T = #max{ T' : rate(R,L,T'), I>=L}.
 
-            &fsum{ I*rate(P)-100*deduction(P) } =: 100*tax(P) :- income(P,I).
-            &fsum{ tax(P) : lives(P,R) } =: total(R) :- region(R).
-            &fmin{ tax(P) : person(P) } =: min.
-            &fmax{ tax(P) : person(P) } =: max.
-            min_taxes(P) :- &fmin{ tax(P') : person(P') } = tax(P), person(P).
-            max_taxes(P) :- &fmax{ tax(P') : person(P') } = tax(P), person(P).
+            &sus{ I*rate(P)-100*deduction(P) } =: 100*tax(P) :- income(P,I).
+            &sus{ tax(P) : lives(P,R) } =: total(R) :- region(R).
+            &min{ tax(P) : person(P) } =: min.
+            &max{ tax(P) : person(P) } =: max.
+            min_taxes(P) :- &min{ tax(P') : person(P') } = tax(P), person(P).
+            max_taxes(P) :- &max{ tax(P') : person(P') } = tax(P), person(P).
 
             #show lives/2.
             #show min_taxes/1.
@@ -668,23 +818,23 @@ class TestMain(unittest.TestCase):
             #const n = 8.
             time(0..n).        step(I,I+1) :- time(I), I < n.
 
-            &fsum {s(I)+D} =: s(I') :-  acc(D,I'), step(I,I').
-            &fsum {s(I)-D} =: s(I') :- slow(D,I'), step(I,I').
+            &sus {s(I)+D} =: s(I') :-  acc(D,I'), step(I,I').
+            &sus {s(I)-D} =: s(I') :- slow(D,I'), step(I,I').
 
-            &fsum {s(I)} =: s(I') :- not &fsum{ s(I') } != s(I), step(I,I').
+            &sus {s(I)} =: s(I') :- not &sus{ s(I') } != s(I), step(I,I').
 
-            def_s(I) :- time(I), &fsum{s(I); -s(I)}=0.
+            def_s(I) :- time(I), &sus{s(I); -s(I)}=0.
 
-            &fsum {p(I)+s(I)} =: p(I') :- def_s(I), step(I,I').
+            &sus {p(I)+s(I)} =: p(I') :- def_s(I), step(I,I').
 
-            &fsum {400000} =: rdpos.
-            &fsum {90000} =: rdlimit.    %  <<< ADDED <<<
+            &sus {400000} =: rdpos.
+            &sus {90000} =: rdlimit.    %  <<< ADDED <<<
 
-            fine(I') :- &fsum{ p(I) } < rdpos, &fsum{ p(I') } >= rdpos, step(I,I'),
-                        &fsum{ s(I') } > rdlimit.
+            fine(I') :- &sus{ p(I) } < rdpos, &sus{ p(I') } >= rdpos, step(I,I'),
+                        &sus{ s(I') } > rdlimit.
 
-            &fsum {0} =: p(0).
-            &fsum {80000} =: s(0).
+            &sus {0} =: p(0).
+            &sus {80000} =: s(0).
 
             acc(11350,4).
             slow(2301,6).

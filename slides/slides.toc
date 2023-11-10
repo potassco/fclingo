@@ -1,5 +1,0 @@
-\beamer@sectionintoc {1}{\ensuremath {\mathit {HT}_{\tmspace -\thinmuskip {.1667em}C}}\ to \emph {CASP}: Syntactic and semantic differences}{15}{0}{1}
-\beamer@sectionintoc {2}{Founding variable values}{30}{0}{2}
-\beamer@sectionintoc {3}{Translating conditional terms}{42}{0}{3}
-\beamer@sectionintoc {4}{Translating assignments, range, minimum/maximum constraint}{50}{0}{4}
-\beamer@sectionintoc {5}{Demonstration}{61}{0}{5}

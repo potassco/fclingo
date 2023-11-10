@@ -4,7 +4,7 @@ Basic functions to run tests.
 
 import clingo
 from clingcon import ClingconTheory
-from clingo.ast import ProgramBuilder, parse_string
+from clingo.ast import Location, Position, ProgramBuilder, Rule, parse_string
 
 from fclingo import THEORY, Translator
 from fclingo.__main__ import CSP, DEF
@@ -69,10 +69,13 @@ class Solver(object):
             hbt = HeadBodyTransformer()
             parse_string(
                 s,
-                lambda ast: self.propagator.rewrite_ast(
-                    ast, lambda stm: bld.add(hbt.visit(stm))
-                ),
+                lambda ast: bld.add(hbt.visit(ast))
+                ,
             )
+            pos = Position('<string>', 1, 1)
+            loc = Location(pos, pos)
+            for rule in hbt.rules_to_add:
+                bld.add(Rule(loc,rule[0],rule[1]))
 
         self.prg.ground([("base", [])])
         translator = Translator(self.prg, Config(self.maxint, self.minint, False, DEF))

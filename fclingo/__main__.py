@@ -6,7 +6,7 @@ import sys
 
 import clingo
 from clingcon import ClingconTheory
-from clingo.ast import ProgramBuilder, parse_files
+from clingo.ast import ProgramBuilder, parse_files, Location, Position, Rule
 
 from fclingo import THEORY
 from fclingo.parsing import HeadBodyTransformer
@@ -154,10 +154,12 @@ class FclingoApp(clingo.Application):
             hbt = HeadBodyTransformer()
             parse_files(
                 files,
-                lambda ast: self._theory.rewrite_ast(
-                    ast, lambda stm: bld.add(hbt.visit(stm))
-                ),
+                lambda stm: bld.add(hbt.visit(stm)),
             )
+            pos = Position('<string>', 1, 1)
+            loc = Location(pos, pos)
+            for rule in hbt.rules_to_add:
+                bld.add(Rule(loc,rule[0],rule[1]))
 
         control.add("base", [], THEORY)
         control.ground([("base", [])])
