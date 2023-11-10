@@ -19,7 +19,7 @@ fclingo is an extension of [clingo](https://github.com/potassco/clingo) and acce
 fclingo relies on the constraint answer set programming (CASP) solver [clingcon](https://github.com/potassco/clingo) into whose language a fclingo program is translated. fclingo's two main advantages are foundedness of the integer variables and aggregates over integer variables. The former allows variables to be undefined and only assume a value if a reason for that value can be derived. This differs to the behavior of CASP, where variables are always defined and in absence of any constraint to a variable, all possible values are enumerated. The latter generalizes ASP aggregates to contain integer variables that are not subject to grounding.
 
 ### Output
-The answer sets of fclingo programs contain atoms `val(x,v)`, where `x` is a integer variable occurring in the program and `v` is the integer value of the variable in the answer set. The absence of such an atom means the variable is undefined.
+The answer sets of fclingo programs contain symbols `val(x,v)`, where `x` is an integer variable occurring in the program and `v` is the integer value of the variable in the answer set. The absence of such an atom means the variable is undefined.
 
 ### Language overview
 fclingo atoms have the following form:
