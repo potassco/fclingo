@@ -4,7 +4,7 @@ price(bag,5).      part(bag).
   selected(frame).
 { selected(bag) }.
 
-&sus{price(P)} = V :- selected(P), price(P,V).
+&sus{V} = price(P) :- selected(P), price(P,V).
 &sus{price(P) : selected(P)} = price(total).
 
 min_price(P) :- &min{price(P') : selected(P')} = price(P),

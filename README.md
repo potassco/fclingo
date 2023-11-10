@@ -46,7 +46,7 @@ price(bag,5).
   selected(frame).
 { selected(bag) }.
 
-&sum{price(P)} = V :- selected(P), price(P,V).
+&sum{V} = price(P) :- selected(P), price(P,V).
 &sum{price(P) : selected(P)} = price(total).
 
 #show selected/1.
@@ -76,7 +76,7 @@ pricelimit(14).
   selected(frame).
 { selected(bag) }.
 
-&sum{price(P)} = V :- selected(P), price(P,V).
+&sum{V} = price(P) :- selected(P), price(P,V).
 :- &sum { price(P) : selected(P)  } >= L,
    pricelimit(L).
 
@@ -109,7 +109,7 @@ pricelimit(14).
   selected(frame).
 { selected(bag) }.
 
-&sus{price(P)} = V :- selected(P), price(P,V).
+&sus{V} = price(P) :- selected(P), price(P,V).
 :- &sus { price(P) : selected(P)  } >= L,
    pricelimit(L).
 
@@ -142,7 +142,7 @@ default_range(1,2).
   selected(frame).
 { selected(bag) }.
 
-&sus{price(P)} = V    :- selected(P), price(P,V).
+&sus{V} = price(P)    :- selected(P), price(P,V).
 &in{L..U} =: price(P) :- selected(P), not price(P,_), 
                          default_range(L,U).
 &sus{price(P) : selected(P)} =: price(total).
@@ -181,7 +181,7 @@ default_price(20).
   selected(frame).
 { selected(bag) }.
 
-&sus{price(P)} = V    :- selected(P), price(P,V).
+&sus{V} = price(P)    :- selected(P), price(P,V).
 &sus{price(P) : selected(P)} =: calc_price(total).
 
 &sus{price(total)} = calc_price(total) :- &df{calc_price(total)}.
@@ -217,7 +217,7 @@ price(bag,5).      part(bag).
   selected(frame).
 { selected(bag) }.
 
-&sus{price(P)} = V :- selected(P), price(P,V).
+&sus{V} = price(P) :- selected(P), price(P,V).
 &sus{price(P) : selected(P)} = price(total).
 
 min_price(P) :- &min{price(P') : selected(P')} = price(P),
@@ -262,7 +262,7 @@ part(standardframe).  price(standardframe,14). type(frame,frame).
 part(fancysaddle).    price(fancysaddle,6).    type(fancysaddle,saddle). 
 part(standardsaddle). price(standardsaddle,5). type(standardsaddle,saddle). 
 
-&sum{price(P)} = V :- price(P,V).
+&sum{V} = price(P) :- price(P,V).
 
 pricelimit(20).
 

@@ -3,7 +3,7 @@ part(standardframe).  price(standardframe,14). type(frame,frame).
 part(fancysaddle).    price(fancysaddle,6).    type(fancysaddle,saddle). 
 part(standardsaddle). price(standardsaddle,5). type(standardsaddle,saddle). 
 
-&sum{price(P)} = V :- price(P,V).
+&sum{V} = price(P) :- price(P,V).
 
 maxlimit(14).
 
