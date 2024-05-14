@@ -3,12 +3,14 @@ Main module providing the application logic.
 """
 
 import sys
+import time
 
 import clingo
 from clingcon import ClingconTheory
 from clingo.ast import ProgramBuilder, parse_files, Location, Position, Rule
 
 from fclingo import THEORY
+from fclingo import translator
 from fclingo.parsing import HeadBodyTransformer
 from fclingo.translator import AUX, Translator
 
@@ -16,6 +18,18 @@ MAX_INT = 1073741823
 MIN_INT = -1073741823
 CSP = "__csp"
 DEF = "__def"
+
+class Statistic:
+    """
+    Class for statistics of fclingo translation.
+    """
+
+    def __init__(self):
+        self.rewrite_ast = 0
+        self.translate_program = 0
+        self.constraints_added = 0
+        self.rules_added = 0
+
 
 class AppConfig:
     """
@@ -40,6 +54,7 @@ class FclingoApp(clingo.Application):
         self.program_name = "fclingo"
         self.version = "0.1"
         self.config = AppConfig(MIN_INT,MAX_INT,clingo.Flag(False),clingo.Flag(False), DEF)
+        self.stats = Statistic()
         self._theory = ClingconTheory()
         self._answer = 0
 
@@ -129,6 +144,14 @@ class FclingoApp(clingo.Application):
 
     def _on_statistics(self, step, akku):
         self._theory.on_statistics(step, akku)
+        akku["fclingo"] = {}
+        fclingo = akku["fclingo"]
+        fclingo["Translation time in seconds"] = {}
+        translation = fclingo["Translation time in seconds"]
+        translation["AST rewriting"] = self.stats.rewrite_ast
+        translation["Translation"] = self.stats.translate_program
+        fclingo["Number of constraints added"] = self.stats.constraints_added
+        fclingo["Number of rules added"] = self.stats.rules_added
         return True
 
     def _read(self, path):
@@ -142,7 +165,6 @@ class FclingoApp(clingo.Application):
         Entry point of the application registering the propagator and
         implementing the standard ground and solve functionality.
         """
-
         self._theory.register(control)
         self._theory.configure("max-int", str(self.config.max_int))
         self._theory.configure("min-int", str(self.config.min_int))
@@ -150,6 +172,7 @@ class FclingoApp(clingo.Application):
         if not files:
             files = ["-"]
 
+        start = time.time()
         with ProgramBuilder(control) as bld:
             hbt = HeadBodyTransformer()
             parse_files(
@@ -160,14 +183,20 @@ class FclingoApp(clingo.Application):
             loc = Location(pos, pos)
             for rule in hbt.rules_to_add:
                 bld.add(Rule(loc,rule[0],rule[1]))
+        end = time.time()
+        self.stats.rewrite_ast = end - start
 
         control.add("base", [], THEORY)
         control.ground([("base", [])])
-        translator = Translator(control, self.config)
+
+        start = time.time()
+        translator = Translator(control, self.config, self.stats)
         translator.translate(control.theory_atoms)
+        end = time.time()
+        self.stats.translate_program = end -start
 
         self._theory.prepare(control)
-        control.solve(on_model=self.on_model, on_statistics=self._theory.on_statistics)
+        control.solve(on_model=self.on_model, on_statistics=self._on_statistics)
 
 
 def main():

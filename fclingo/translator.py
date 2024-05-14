@@ -173,9 +173,10 @@ class Translator:
     including assignments and conditionals into a Clingcon program.
     """
 
-    def __init__(self, prg, config):
+    def __init__(self, prg, config, stats):
         self._prg = prg
         self._config = config
+        self._stats = stats
         self._defined = {}
         self._auxvars = 0
         self._sum_constraints = set()
