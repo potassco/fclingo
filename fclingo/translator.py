@@ -231,10 +231,12 @@ class Translator:
             clingo.TheoryTermType.Function,
         )
         self._auxvars += 1
+        self._stats.variables_added+=1
         return var
 
     def _add_atom(self, symbol=None):
         with self._prg.backend() as backend:
+            self._stats.constraints_added+=1
             if symbol:
                 return backend.add_atom(symbol)
             return backend.add_atom()
@@ -256,6 +258,7 @@ class Translator:
 
     def _add_rule(self, head, body, choice=False):
         with self._prg.backend() as backend:
+            self._stats.rules_added+=1
             backend.add_rule(head, body, choice)
         if self._config.print_trans:
             head_atoms = []

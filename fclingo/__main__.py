@@ -29,6 +29,7 @@ class Statistic:
         self.translate_program = 0
         self.constraints_added = 0
         self.rules_added = 0
+        self.variables_added = 0
 
 
 class AppConfig:
@@ -150,6 +151,7 @@ class FclingoApp(clingo.Application):
         translation = fclingo["Translation time in seconds"]
         translation["AST rewriting"] = self.stats.rewrite_ast
         translation["Translation"] = self.stats.translate_program
+        fclingo["Number of variables added"] = self.stats.variables_added
         fclingo["Number of constraints added"] = self.stats.constraints_added
         fclingo["Number of rules added"] = self.stats.rules_added
         return True
