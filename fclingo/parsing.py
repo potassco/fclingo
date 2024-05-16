@@ -1,6 +1,7 @@
 """
 This module contains functions for parsing and normalizing constraints.
 """
+
 import clingo
 from clingo import ast
 
@@ -138,7 +139,7 @@ class HeadBodyTransformer(ast.Transformer):
             )
         return atom
 
-    def visit_Rule(self,rule):
+    def visit_Rule(self, rule):
         head = rule.head
         location = head.location
         if head.ast_type == ast.ASTType.TheoryAtom:
@@ -146,23 +147,50 @@ class HeadBodyTransformer(ast.Transformer):
             for element in head.elements:
                 term = element.terms[0]
                 condition = element.condition
-                if term.ast_type == ast.ASTType.TheoryUnparsedTerm and "::" in str(term):
+                if term.ast_type == ast.ASTType.TheoryUnparsedTerm and "::" in str(
+                    term
+                ):
                     unparsed_terms = term.elements[:-1]
                     choice_atom = term.elements[-1].term
-                    assert "::" == term.elements[-1].operators[0] and choice_atom.ast_type in [ast.ASTType.TheoryFunction, ast.ASTType.SymbolicTerm] and len(element.terms) == 1
+                    assert (
+                        "::" == term.elements[-1].operators[0]
+                        and choice_atom.ast_type
+                        in [ast.ASTType.TheoryFunction, ast.ASTType.SymbolicTerm]
+                        and len(element.terms) == 1
+                    )
                     if choice_atom.ast_type == ast.ASTType.TheoryFunction:
-                        choice_atom = ast.Literal(location,0,ast.SymbolicAtom(ast.Function(location,choice_atom.name,choice_atom.arguments,0)))
+                        choice_atom = ast.Literal(
+                            location,
+                            0,
+                            ast.SymbolicAtom(
+                                ast.Function(
+                                    location, choice_atom.name, choice_atom.arguments, 0
+                                )
+                            ),
+                        )
                     else:
-                        choice_atom = ast.Literal(location,0,ast.SymbolicAtom(choice_atom))
-                    choice = ast.Aggregate(location, None, [ast.ConditionalLiteral(location,choice_atom,[])], None)                    
+                        choice_atom = ast.Literal(
+                            location, 0, ast.SymbolicAtom(choice_atom)
+                        )
+                    choice = ast.Aggregate(
+                        location,
+                        None,
+                        [ast.ConditionalLiteral(location, choice_atom, [])],
+                        None,
+                    )
                     body = []
                     body.extend(rule.body)
                     body.extend(condition)
-                    self.rules_to_add.append((choice,body))
+                    self.rules_to_add.append((choice, body))
                     new_element_condition = [choice_atom]
                     new_element_condition.extend(condition)
-                    new_elements.append(ast.TheoryAtomElement([ast.TheoryUnparsedTerm(location,unparsed_terms)],new_element_condition))
+                    new_elements.append(
+                        ast.TheoryAtomElement(
+                            [ast.TheoryUnparsedTerm(location, unparsed_terms)],
+                            new_element_condition,
+                        )
+                    )
                 else:
                     new_elements.append(element)
-            rule.head.elements=new_elements
+            rule.head.elements = new_elements
         return rule.update(**self.visit_children(rule))

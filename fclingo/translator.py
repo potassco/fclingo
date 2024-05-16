@@ -10,6 +10,7 @@ from fclingo.parsing import BODY, HEAD, PREFIX
 
 AUX = "__aux"
 
+
 class ConstraintAtom:
     """
     Representation of a constraint atom.
@@ -145,23 +146,20 @@ class ConstraintTerm:
 
     def __eq__(self, another_term):
         if not isinstance(another_term, ConstraintTerm):
-            raise TypeError('Can only compare two ConstraintTerms')   
+            raise TypeError("Can only compare two ConstraintTerms")
         return str(self) == str(another_term)
-    
+
     def __hash__(self):
         return hash(str(self))
 
+
 ONE = ConstraintTerm(None, 1, None, clingo.TheoryTermType.Number)
 ZERO = ConstraintTerm(None, 0, None, clingo.TheoryTermType.Number)
-SUM_TERM_HEAD = ConstraintTerm(
-    "__sum" + HEAD, None, [], clingo.TheoryTermType.Function
-)
+SUM_TERM_HEAD = ConstraintTerm("__sum" + HEAD, None, [], clingo.TheoryTermType.Function)
 FSUM_TERM_HEAD = ConstraintTerm(
     PREFIX + "sum" + HEAD, None, [], clingo.TheoryTermType.Function
 )
-SUM_TERM_BODY = ConstraintTerm(
-    "__sum" + BODY, None, [], clingo.TheoryTermType.Function
-)
+SUM_TERM_BODY = ConstraintTerm("__sum" + BODY, None, [], clingo.TheoryTermType.Function)
 FSUM_TERM_BODY = ConstraintTerm(
     PREFIX + "sum" + BODY, None, [], clingo.TheoryTermType.Function
 )
@@ -173,9 +171,10 @@ class Translator:
     including assignments and conditionals into a Clingcon program.
     """
 
-    def __init__(self, prg, config):
+    def __init__(self, prg, config, stats):
         self._prg = prg
         self._config = config
+        self._stats = stats
         self._defined = {}
         self._auxvars = 0
         self._sum_constraints = set()
@@ -230,10 +229,12 @@ class Translator:
             clingo.TheoryTermType.Function,
         )
         self._auxvars += 1
+        self._stats.variables_added += 1
         return var
 
     def _add_atom(self, symbol=None):
         with self._prg.backend() as backend:
+            self._stats.constraints_added += 1
             if symbol:
                 return backend.add_atom(symbol)
             return backend.add_atom()
@@ -255,6 +256,7 @@ class Translator:
 
     def _add_rule(self, head, body, choice=False):
         with self._prg.backend() as backend:
+            self._stats.rules_added += 1
             backend.add_rule(head, body, choice)
         if self._config.print_trans:
             head_atoms = []
@@ -288,7 +290,9 @@ class Translator:
 
     def _define_variables(self, atom):
         assert (
-            match(atom.term, PREFIX + "sum" + HEAD, 0) or match(atom.term, PREFIX + "sus" + HEAD, 0) or match(atom.term, "__sum" + HEAD, 0)
+            match(atom.term, PREFIX + "sum" + HEAD, 0)
+            or match(atom.term, PREFIX + "sus" + HEAD, 0)
+            or match(atom.term, "__sum" + HEAD, 0)
         ) and not self.conditional(atom)
         for var in self.vars(atom.guard[1]):
             self._add_defined(var, [atom.literal])
@@ -460,9 +464,7 @@ class Translator:
         elif ">" in rel:
             rel = rel.replace(">", "<")
         type_term = ConstraintTerm(
-            PREFIX + "min" + BODY
-            if BODY in atom.term.name
-            else PREFIX + "min" + HEAD,
+            PREFIX + "min" + BODY if BODY in atom.term.name else PREFIX + "min" + HEAD,
             None,
             [],
             clingo.TheoryTermType.Function,
@@ -653,7 +655,7 @@ class Translator:
             assert len(atom.elements) == 1 and not self.conditional(atom)
             var = self.vars(atom.elements[0].terms[0]).pop()
             def_lit = self._add_defined(var)
-            self._add_rule([atom.literal],[def_lit])
+            self._add_rule([atom.literal], [def_lit])
         elif (
             (
                 match(atom.term, PREFIX + "sum" + BODY, 0)
@@ -686,10 +688,10 @@ class Translator:
         for atom in theory_atoms:
             self._translate_constraint(atom)
 
-    def _prepare_theory_atoms(self,theory_atoms):
+    def _prepare_theory_atoms(self, theory_atoms):
         atoms = []
         for atom in theory_atoms:
-            ca =  ConstraintAtom.copy(atom)
+            ca = ConstraintAtom.copy(atom)
             if (
                 match(ca.term, PREFIX + "sum" + BODY, 0)
                 or match(ca.term, PREFIX + "sum" + HEAD, 0)
