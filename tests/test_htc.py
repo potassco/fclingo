@@ -232,7 +232,7 @@ class TestMain(unittest.TestCase):
                 -10,
                 10,
             ),
-            [["b",("x", 0)]],
+            [["b", ("x", 0)]],
         )
         self.assertEqual(
             solve(
@@ -242,7 +242,7 @@ class TestMain(unittest.TestCase):
                 -10,
                 10,
             ),
-            [["b",("x", 0)]],
+            [["b", ("x", 0)]],
         )
         self.assertEqual(
             solve(
@@ -252,7 +252,7 @@ class TestMain(unittest.TestCase):
                 -10,
                 10,
             ),
-            [[("x", 0),("y", 0)]],
+            [[("x", 0), ("y", 0)]],
         )
         self.assertEqual(
             solve(
@@ -263,7 +263,7 @@ class TestMain(unittest.TestCase):
                 -10,
                 10,
             ),
-            [["b",("x",2),("y",2)]],
+            [["b", ("x", 2), ("y", 2)]],
         )
 
     def test_multiset(self):
@@ -639,7 +639,7 @@ class TestMain(unittest.TestCase):
                 -10,
                 10,
             ),
-            [['a', ('x', 4)]],
+            [["a", ("x", 4)]],
         )
         self.assertEqual(
             solve(
@@ -660,7 +660,15 @@ class TestMain(unittest.TestCase):
                 -2,
                 2,
             ),
-            [['a', ('x', 2), ('y', 0)], ['a', 'b', ('x', 0), ('y', 2)], ['a', 'b', ('x', 0), ('y', 2)], ['a', 'b', ('x', 1), ('y', 1)], ['a', 'b', ('x', 2), ('y', 0)], ['a', 'b', ('x', 2), ('y', 0)], ['b', ('x', 0), ('y', 2)]],
+            [
+                ["a", ("x", 2), ("y", 0)],
+                ["a", "b", ("x", 0), ("y", 2)],
+                ["a", "b", ("x", 0), ("y", 2)],
+                ["a", "b", ("x", 1), ("y", 1)],
+                ["a", "b", ("x", 2), ("y", 0)],
+                ["a", "b", ("x", 2), ("y", 0)],
+                ["b", ("x", 0), ("y", 2)],
+            ],
         )
         self.assertEqual(
             solve(
@@ -670,7 +678,7 @@ class TestMain(unittest.TestCase):
                 -10,
                 10,
             ),
-            [['a', ('x', 8)]],
+            [["a", ("x", 8)]],
         )
         self.assertEqual(
             solve(
@@ -681,7 +689,7 @@ class TestMain(unittest.TestCase):
                 -2,
                 2,
             ),
-            [['a(1)', 'a(2)', 'r(1)', 'r(2)', ('x(1)', 2), ('x(2)', 2)]],
+            [["a(1)", "a(2)", "r(1)", "r(2)", ("x(1)", 2), ("x(2)", 2)]],
         )
         self.assertEqual(
             solve(
@@ -692,7 +700,10 @@ class TestMain(unittest.TestCase):
                 -4,
                 4,
             ),
-            [['a(1)', 'a(2)', 'r(1)', 'r(2)', ('x(1)', 4), ('x(2)', 4)], ['a(1)', 'r(1)', ('x(1)', 4), ('x(2)', 0)]],
+            [
+                ["a(1)", "a(2)", "r(1)", "r(2)", ("x(1)", 4), ("x(2)", 4)],
+                ["a(1)", "r(1)", ("x(1)", 4), ("x(2)", 0)],
+            ],
         )
 
     def test_choice_sus(self):
@@ -714,7 +725,7 @@ class TestMain(unittest.TestCase):
                 -10,
                 10,
             ),
-            [['a', ('x', 4)]],
+            [["a", ("x", 4)]],
         )
         self.assertEqual(
             solve(
@@ -735,7 +746,13 @@ class TestMain(unittest.TestCase):
                 -2,
                 2,
             ),
-            [['a', ('x', 2), ('y', 0)], ['a', 'b', ('x', 0), ('y', 2)], ['a', 'b', ('x', 1), ('y', 1)], ['a', 'b', ('x', 2), ('y', 0)], ['b', ('x', 0), ('y', 2)]],
+            [
+                ["a", ("x", 2), ("y", 0)],
+                ["a", "b", ("x", 0), ("y", 2)],
+                ["a", "b", ("x", 1), ("y", 1)],
+                ["a", "b", ("x", 2), ("y", 0)],
+                ["b", ("x", 0), ("y", 2)],
+            ],
         )
         self.assertEqual(
             solve(
@@ -745,7 +762,7 @@ class TestMain(unittest.TestCase):
                 -10,
                 10,
             ),
-            [['a', ('x', 8)]],
+            [["a", ("x", 8)]],
         )
         self.assertEqual(
             solve(
@@ -756,7 +773,7 @@ class TestMain(unittest.TestCase):
                 -2,
                 2,
             ),
-            [['a(1)', 'a(2)', 'r(1)', 'r(2)', ('x(1)', 2), ('x(2)', 2)]],
+            [["a(1)", "a(2)", "r(1)", "r(2)", ("x(1)", 2), ("x(2)", 2)]],
         )
         self.assertEqual(
             solve(
@@ -767,7 +784,10 @@ class TestMain(unittest.TestCase):
                 -4,
                 4,
             ),
-            [['a(1)', 'a(2)', 'r(1)', 'r(2)', ('x(1)', 4), ('x(2)', 4)], ['a(1)', 'r(1)', ('x(1)', 4), ('x(2)', 0)]],
+            [
+                ["a(1)", "a(2)", "r(1)", "r(2)", ("x(1)", 4), ("x(2)", 4)],
+                ["a(1)", "r(1)", ("x(1)", 4), ("x(2)", 0)],
+            ],
         )
 
     def test_taxes(self):

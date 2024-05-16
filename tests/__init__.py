@@ -7,12 +7,12 @@ from clingcon import ClingconTheory
 from clingo.ast import Location, Position, ProgramBuilder, Rule, parse_string
 
 from fclingo import THEORY, Translator
-from fclingo.__main__ import CSP, DEF
+from fclingo.__main__ import CSP, DEF, Statistic
 from fclingo.parsing import HeadBodyTransformer
 
 
 class Config:
-    def __init__(self, max_int, min_int, print_trans ,defined) -> None:
+    def __init__(self, max_int, min_int, print_trans, defined) -> None:
         self.max_int = max_int
         self.min_int = min_int
         self.print_trans = print_trans
@@ -69,16 +69,17 @@ class Solver(object):
             hbt = HeadBodyTransformer()
             parse_string(
                 s,
-                lambda ast: bld.add(hbt.visit(ast))
-                ,
+                lambda ast: bld.add(hbt.visit(ast)),
             )
-            pos = Position('<string>', 1, 1)
+            pos = Position("<string>", 1, 1)
             loc = Location(pos, pos)
             for rule in hbt.rules_to_add:
-                bld.add(Rule(loc,rule[0],rule[1]))
+                bld.add(Rule(loc, rule[0], rule[1]))
 
         self.prg.ground([("base", [])])
-        translator = Translator(self.prg, Config(self.maxint, self.minint, False, DEF))
+        translator = Translator(
+            self.prg, Config(self.maxint, self.minint, False, DEF), Statistic()
+        )
         translator.translate(self.prg.theory_atoms)
 
         ret = []

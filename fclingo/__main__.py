@@ -7,10 +7,9 @@ import time
 
 import clingo
 from clingcon import ClingconTheory
-from clingo.ast import ProgramBuilder, parse_files, Location, Position, Rule
+from clingo.ast import Location, Position, ProgramBuilder, Rule, parse_files
 
-from fclingo import THEORY
-from fclingo import translator
+from fclingo import THEORY, translator
 from fclingo.parsing import HeadBodyTransformer
 from fclingo.translator import AUX, Translator
 
@@ -18,6 +17,7 @@ MAX_INT = 1073741823
 MIN_INT = -1073741823
 CSP = "__csp"
 DEF = "__def"
+
 
 class Statistic:
     """
@@ -54,7 +54,9 @@ class FclingoApp(clingo.Application):
     def __init__(self):
         self.program_name = "fclingo"
         self.version = "0.1"
-        self.config = AppConfig(MIN_INT,MAX_INT,clingo.Flag(False),clingo.Flag(False), DEF)
+        self.config = AppConfig(
+            MIN_INT, MAX_INT, clingo.Flag(False), clingo.Flag(False), DEF
+        )
         self.stats = Statistic()
         self._theory = ClingconTheory()
         self._answer = 0
@@ -80,7 +82,9 @@ class FclingoApp(clingo.Application):
             for assignment in model.symbols(theory=True)
             if assignment.name == CSP
             and len(assignment.arguments) == 2
-            and model.contains(clingo.Function(self.config.defined, [assignment.arguments[0]]))
+            and model.contains(
+                clingo.Function(self.config.defined, [assignment.arguments[0]])
+            )
             and not assignment.arguments[0].name == AUX
         ]
         shown.extend(valuation)
@@ -107,8 +111,8 @@ class FclingoApp(clingo.Application):
 
     def _flag_str(self, flag):
         return "yes" if flag else "no"
-    
-    def _parse_defined_predicate(self,name):
+
+    def _parse_defined_predicate(self, name):
         if name[0].islower() and name.contains("[a-zA-Z0-9]+"):
             self.config.defined = name
             return True
@@ -140,7 +144,7 @@ class FclingoApp(clingo.Application):
             group,
             "defined-predicate",
             "Name of the defined predicate [{}]".format(self.config.defined),
-            self._parse_defined_predicate
+            self._parse_defined_predicate,
         )
 
     def _on_statistics(self, step, akku):
@@ -181,10 +185,10 @@ class FclingoApp(clingo.Application):
                 files,
                 lambda stm: bld.add(hbt.visit(stm)),
             )
-            pos = Position('<string>', 1, 1)
+            pos = Position("<string>", 1, 1)
             loc = Location(pos, pos)
             for rule in hbt.rules_to_add:
-                bld.add(Rule(loc,rule[0],rule[1]))
+                bld.add(Rule(loc, rule[0], rule[1]))
         end = time.time()
         self.stats.rewrite_ast = end - start
 
@@ -195,7 +199,7 @@ class FclingoApp(clingo.Application):
         translator = Translator(control, self.config, self.stats)
         translator.translate(control.theory_atoms)
         end = time.time()
-        self.stats.translate_program = end -start
+        self.stats.translate_program = end - start
 
         self._theory.prepare(control)
         control.solve(on_model=self.on_model, on_statistics=self._on_statistics)
