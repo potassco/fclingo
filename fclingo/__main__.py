@@ -9,7 +9,7 @@ import clingo
 from clingcon import ClingconTheory
 from clingo.ast import Location, Position, ProgramBuilder, Rule, parse_files
 
-from fclingo import THEORY, translator
+from fclingo import THEORY
 from fclingo.parsing import HeadBodyTransformer
 from fclingo.translator import AUX, Translator
 
@@ -17,6 +17,7 @@ MAX_INT = 1073741823
 MIN_INT = -1073741823
 CSP = "__csp"
 DEF = "__def"
+VAL = "valuation"
 
 
 class Statistic:
@@ -68,13 +69,16 @@ class FclingoApp(clingo.Application):
         self._theory.on_model(model)
 
     def print_model(self, model, printer):
+        """
+        Print model and add assignment of defined variables. 
+        """
         shown = [
             str(atom)
             for atom in model.symbols(shown=True)
             if not (atom.name == self.config.defined and len(atom.arguments) == 1)
         ]
         valuation = [
-            "val("
+            VAL + "("
             + str(assignment.arguments[0])
             + ","
             + str(assignment.arguments[1])
@@ -85,7 +89,7 @@ class FclingoApp(clingo.Application):
             and model.contains(
                 clingo.Function(self.config.defined, [assignment.arguments[0]])
             )
-            and not assignment.arguments[0].name == AUX
+            and not str(assignment.arguments[0].name) == AUX
         ]
         shown.extend(valuation)
         print(" ".join(shown))

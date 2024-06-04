@@ -214,6 +214,9 @@ class Translator:
                 term.name, [self.term_to_symbol(arg) for arg in term.arguments]
             )
         if term.type == clingo.TheoryTermType.Symbol:
+            if term.name[0] == '"' and term.name[-1] == '"':
+                name = str(term.name).replace('"','')
+                return clingo.String(name)
             return clingo.Function(term.name)
         if term.type == clingo.TheoryTermType.Number:
             return clingo.Number(term.number)
