@@ -582,9 +582,6 @@ class Translator:
             return backend.add_theory_term_symbol(parse_term(term.name))
 
     def _add_clingcon_constraint(self, atom):
-        for con in self._sum_constraints:
-            if str(con) == str(atom):
-                return con.literal
         with self._prg.backend() as backend:
             if self._config.print_trans:
                 print()
@@ -609,9 +606,6 @@ class Translator:
             sum_con = ConstraintAtom.copy(atom)
         else:
             sum_con = atom
-        for con in self._fsum_constraints:
-            if str(con) == str(sum_con):
-                return con.literal
         if sum_con.literal is None:
             sum_con.literal = self._add_atom()
         if self._config.print_trans:
