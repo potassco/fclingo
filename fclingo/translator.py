@@ -234,7 +234,7 @@ class Translator:
 
     def _add_atom(self, symbol=None):
         with self._prg.backend() as backend:
-            self._stats.constraints_added += 1
+            self._stats.atoms_added += 1
             if symbol:
                 return backend.add_atom(symbol)
             return backend.add_atom()
@@ -597,6 +597,7 @@ class Translator:
             guard = atom.guard[0]
             rhs = self._term_id(atom.guard[1], backend)
             lit = backend.add_theory_atom_with_guard(name, elements, guard, rhs)
+            self._stats.atoms_added+=1
             if atom.literal is None or atom.literal == 0:
                 atom.literal = lit
         return lit
