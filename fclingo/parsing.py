@@ -40,7 +40,7 @@ THEORY = (
     + PREFIX
     + """sum"""
     + HEAD
-    + """/0 : sum_term, {<=,=,!=,<,>,>=}, sum_term, head;
+    + """/0 : sum_term, {<=,=,!=,<,>,>=,=:}, sum_term, head;
     &"""
     + PREFIX
     + """sus"""
