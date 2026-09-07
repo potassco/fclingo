@@ -64,3 +64,8 @@ Sums up all linear terms in the set and returns the minimum or maximum value, re
     - `x` is the name of a variable.
     - `<>` is one of `<=`, `=`, `!=`, `<`, `>`, or `>=`.
 
+[sum-clingo]: ../reference/language/sum.md
+[sum-strict]: ../reference/language/sus.md
+[assignments]: ../reference/language/in.md
+[defined]: ../reference/language/def.md
+[min-max]: ../reference/language/minmax.md
