@@ -20,7 +20,7 @@ new tag. To enable this:
 
 This setup ensures your documentation is updated whenever you create a new
 release tag via GitHub workflows. The final documentation will be made
-available at `https://potassco.org/flingo/docs`.
+available at `https://docs.potassco.org/flingo`.
 
 [environment]: https://docs.github.com/en/actions/deployment/targeting-different-environments/using-environments-for-deployment/
 [guide]: https://packaging.python.org/en/latest/guides/publishing-package-distribution-releases-using-github-actions-ci-cd-workflows/

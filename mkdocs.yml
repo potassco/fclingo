@@ -1,10 +1,9 @@
 site_name: flingo
-site_url: https://potassco.org/flingo/docs
+site_url: https://docs.potassco.org/flingo/
 site_description:
 repo_name: potassco/flingo
 repo_url: https://github.com/potassco/flingo
 copyright: Copyright &copy; 2026 Potassco
-site_dir: site/docs
 
 extra_css:
   - _custom/css/extra.css
